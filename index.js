@@ -9,7 +9,7 @@ const words = require("random-words");
 const simpleGit = require('simple-git')();
 const secrets = require('./secrets.json');
 
-let bot = new Bot("!", secrets.discordToken);
+let bot = new Bot("!!", secrets.discordToken);
 
 
 /*************** FUNCTIONS ***************/
