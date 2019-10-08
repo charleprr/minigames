@@ -175,13 +175,16 @@ child_process.execSync("git pull");
 child_process.spawnSync(process.argv[0], process.argv.slice(1), {stdio: "ignore", detached: true}).unref();
 process.exit();
 */
+const child_process = require("child_process");
 bot.add("update", "", message => {
-	message.channel.send("Pulling...");
-	try {
-		simpleGit.pull().exec((e) => {message.channel.send("> "+e);});
-	} catch (e) {
-		message.channel.send(e);
-	}
+
+	message.channel.send("> Updating...").then(() => {
+		child_process.spawn(process.argv[0], process.argv.slice(1), {stdio: "ignore", detached: true}).unref();
+		bot.client.destroy();
+		process.exit();
+	});
+	child_process.execSync("git pull");
+	
 }, "Updates the bot", true);
 
 
