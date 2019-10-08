@@ -1,6 +1,6 @@
 /**
  * @name Minigames
- * @author Charly#7870
+ * @author Charly#7871
  */
 
 const Bot = require("./Bot.js");
