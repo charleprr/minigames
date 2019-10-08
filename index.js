@@ -6,6 +6,7 @@
 const Bot = require("./Bot.js");
 const Database = require("./Database.js");
 const words = require("random-words");
+const simpleGit = require('simple-git')();
 const secrets = require('./secrets.json');
 
 let bot = new Bot("!", secrets.discordToken);
@@ -168,6 +169,20 @@ bot.add("js", "[code]", message => {
 		message.channel.send("> "+e+".");
 	}
 }, "Executes JavaScript code", true);
+
+/*
+child_process.execSync("git pull");
+child_process.spawnSync(process.argv[0], process.argv.slice(1), {stdio: "ignore", detached: true}).unref();
+process.exit();
+*/
+bot.add("update", "", message => {
+	message.channel.send("Pulling...");
+	try {
+		simpleGit.pull().exec((e) => {message.channel.send("> "+e);});
+	} catch (e) {
+		message.channel.send(e);
+	}
+}, "Updates the bot", true);
 
 
 bot.start();
