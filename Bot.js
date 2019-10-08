@@ -18,6 +18,7 @@ class Bot {
         this.client.on("ready", () => {
             console.log("Logged in as "+this.client.user.tag+"!");
             this.client.user.setActivity("minigames ("+this.prefix+"games)");
+            this.client.channels.get("450609429612855296").send("> Connected !");
         });
 
         let self = this;
