@@ -1,6 +1,6 @@
 /**
  * @name Minigames
- * @author Charly#7871
+ * @author Charly#7870
  */
 
 const Bot = require("./Bot.js");
@@ -9,7 +9,7 @@ const words = require("random-words");
 const simpleGit = require('simple-git')();
 const secrets = require('./secrets.json');
 
-let bot = new Bot("!!", secrets.discordToken);
+let bot = new Bot("!", secrets.discordToken);
 
 
 /*************** FUNCTIONS ***************/
