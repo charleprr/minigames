@@ -172,7 +172,7 @@ bot.add("js", "[code]", message => {
 
 
 bot.add("update", "", message => {
-	message.channel.send("> Restarting...").then(() => {
+	message.channel.send(":inbox_tray: Updating...").then(() => {
 		child_process.execSync("git pull");
 		child_process.spawn(process.argv[0], process.argv.slice(1), {stdio: "ignore", detached: true}).unref();
 		bot.client.destroy();
