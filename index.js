@@ -47,6 +47,7 @@ bot.add("math", "", message => {
 			// Set a time limit of 30 seconds
 			let timeLimit = setTimeout(() => {
 				message.channel.send("It's been 30 seconds! The game is over.\nThe correct answer was **"+result+"**.");
+				bot.client.removeListener('message', listener);
 				bot.isBusy = false;
 			}, 30000);
 
@@ -76,43 +77,55 @@ bot.add("math", "", message => {
 
 bot.add("type", "", message => {
 
+	// Reject the request if the bot is busy
 	if (bot.isBusy) return;
-	
-	message.channel.send("> Current highscore is **"+Number(Database.highscores.type.score).toFixed(3)+"** seconds by "+Database.highscores.type.name+".\n> Get ready...");
 	bot.isBusy = true;
+	
+	let highscore = Number(Database.highscores.type.score).toFixed(3);
+	let holder = Database.highscores.type.name;
+	message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
 
+	// Getting a random word
 	let word = words();
-	let cgj = "\u034f";
-	let display_word = "";
-	for (let c of word) display_word += Math.random()>0.5? cgj+c: c+cgj;
 
+	// Some delay before the game starts
 	setTimeout(() => {
-		message.channel.send("Type __**"+display_word+"**__ as fast as possible!");
-		let startTime = Date.now();
-		let x = setInterval(() => {
-			if ((Date.now() - startTime) / 1000 > 30.000){
+
+		let startTime;
+		let channelId = message.channel.id;
+
+		message.channel.send("Type __**"+word+"**__ as fast as possible!").then(() => {
+
+			// Record the current timestamp
+			startTime = Date.now();
+
+			// Set a time limit of 30 seconds
+			let timeLimit = setTimeout(() => {
 				message.channel.send("It's been 30 seconds! The game is over.");
-				clearInterval(x);
+				bot.client.removeListener('message', listener);
 				bot.isBusy = false;
-			}
-		}, 1000);
-		let listener = answer => {
-			if (bot.isBusy) {
-				if (answer.content.toLowerCase() == word) {
-					let sec = (answer.createdTimestamp - startTime) / 1000;
-					bot.isBusy = false;
-					if (sec < Database.highscores.type.score) {
-						message.channel.send(answer.author.username+" won in **"+sec.toFixed(3)+"** seconds! **NEW RECORD!**");
-						Database.update("highscores", {}, {$set:{"type": {"tag": answer.author.tag, "name": answer.author.username, "score": sec}}});
+			}, 30000);
+
+			// Separate event listener for messages
+			let listener = answer => {
+				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
+					let time = (answer.createdTimestamp - startTime) / 1000;
+					clearTimeout(timeLimit);
+
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
+					if (time < highscore) {
+						message.channel.send(endMessage+" **NEW RECORD!**");
+						Database.update("highscores", {}, {$set:{"type": {"tag": answer.author.tag, "name": answer.author.username, "score": time}}});
 					} else {
-						message.channel.send(answer.author.username+" won in **"+sec.toFixed(3)+"** seconds!");
+						message.channel.send(endMessage);
 					}
-					clearInterval(x);
+					
+					bot.isBusy = false;
 					bot.client.removeListener('message', listener);
 				}
-			}
-		};
-		bot.on('message', listener);
+			};
+			bot.on('message', listener);
+		});
 	}, 4000);
 }, "A fun typing race between players!", false);
 
