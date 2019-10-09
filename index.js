@@ -50,13 +50,6 @@ bot.add("math", "", message => {
 			// Record the current timestamp
 			startTime = Date.now();
 
-			// Set a time limit of 30 seconds
-			let timeLimit = setTimeout(() => {
-				message.channel.send("It's been 30 seconds! The game is over.\nThe correct answer was **"+result+"**.");
-				bot.client.removeListener('message', listener);
-				bot.isBusy = false;
-			}, 30000);
-
 			// Separate event listener for messages
 			let listener = answer => {
 				if (answer.content == result && answer.channel.id == channelId) {
@@ -76,6 +69,13 @@ bot.add("math", "", message => {
 				}
 			};
 			bot.on('message', listener);
+
+			// Set a time limit of 30 seconds
+			let timeLimit = setTimeout(() => {
+				message.channel.send("It's been 30 seconds! The game is over.\nThe correct answer was **"+result+"**.");
+				bot.client.removeListener('message', listener);
+				bot.isBusy = false;
+			}, 30000);
 		});
 	}, 4000);
 }, "An easy math problem to solve as quick as possible!", false);
@@ -109,13 +109,6 @@ bot.add("type", "", message => {
 			// Record the current timestamp
 			startTime = Date.now();
 
-			// Set a time limit of 30 seconds
-			let timeLimit = setTimeout(() => {
-				message.channel.send("It's been 30 seconds! The game is over.");
-				bot.client.removeListener('message', listener);
-				bot.isBusy = false;
-			}, 30000);
-
 			// Separate event listener for messages
 			let listener = answer => {
 				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
@@ -135,6 +128,13 @@ bot.add("type", "", message => {
 				}
 			};
 			bot.on('message', listener);
+
+			// Set a time limit of 30 seconds
+			let timeLimit = setTimeout(() => {
+				message.channel.send("It's been 30 seconds! The game is over.");
+				bot.client.removeListener('message', listener);
+				bot.isBusy = false;
+			}, 30000);
 		});
 	}, 4000);
 }, "A fun typing race between players!", false);
@@ -170,13 +170,6 @@ bot.add("shuffle", "", message => {
 			// Record the current timestamp
 			startTime = Date.now();
 
-			// Set a time limit of 30 seconds
-			let timeLimit = setTimeout(() => {
-				message.channel.send("It's been 30 seconds! The game is over.\nThe correct answer was **"+word+"**.");
-				bot.client.removeListener('message', listener);
-				bot.isBusy = false;
-			}, 30000);
-
 			// Separate event listener for messages
 			let listener = answer => {
 				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
@@ -196,6 +189,13 @@ bot.add("shuffle", "", message => {
 				}
 			};
 			bot.on('message', listener);
+
+			// Set a time limit of 30 seconds
+			let timeLimit = setTimeout(() => {
+				message.channel.send("It's been 30 seconds! The game is over.\nThe correct answer was **"+word+"**.");
+				bot.client.removeListener('message', listener);
+				bot.isBusy = false;
+			}, 30000);
 		});
 	}, 4000);
 }, "Be the quickest to find the shuffled word!", false);
