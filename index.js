@@ -172,7 +172,7 @@ bot.add("shuffle", "", message => {
 
 			// Set a time limit of 30 seconds
 			let timeLimit = setTimeout(() => {
-				message.channel.send("It's been 30 seconds! The game is over.");
+				message.channel.send("It's been 30 seconds! The game is over.\nThe correct answer was **"+word+"**.");
 				bot.client.removeListener('message', listener);
 				bot.isBusy = false;
 			}, 30000);
