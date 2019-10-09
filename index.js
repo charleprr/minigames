@@ -3,75 +3,73 @@
  * @author Charly#7870
  */
 
+// Dependencies
 const Bot = require("./Bot.js");
 const Database = require("./Database.js");
+
+// Modules
 const words = require("random-words");
 const child_process = require("child_process");
+
+// Secrets
 const secrets = require('./secrets.json');
 
 let bot = new Bot("!", secrets.discordToken);
 
 
-/*************** FUNCTIONS ***************/
-
-String.prototype.shuffle = function() {
-    let a = this.split("");
-    let n = a.length;
-    for(let i=n-1; i>0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        let tmp = a[i];
-        a[i] = a[j];
-        a[j] = tmp;
-    }
-	return a.join("");
-};
-
-
-/*************** COMMANDS ***************/
 
 bot.add("math", "", message => {
+
+	// Reject the request if the bot is busy
 	if (bot.isBusy) return;
-	
-	message.channel.send("> Current highscore is **"+Number(Database.highscores.math.score).toFixed(3)+"** seconds by "+Database.highscores.math.name+".\n> Get ready...");
 	bot.isBusy = true;
 
+	let highscore = Number(Database.highscores.math.score).toFixed(3);
+	let holder = Database.highscores.math.name;
+	message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
+	
 	// Generating the numbers between 21 and 100
-	let n1 = Math.floor(Math.random()*80)+21;
-	let n2 = Math.floor(Math.random()*80)+21;
-	let res = n1 + n2;
-	let cgj = "\u034f";
+	let a = Math.floor(Math.random()*80)+21;
+	let b = Math.floor(Math.random()*80)+21;
+	let result = a + b;
 
-	// Bot-proof thingy
-	n1 > 9 && n1 < 100 ? n1 = Math.floor(n1/10) + cgj + n1%10 : n1;
-	n2 > 9 && n2 < 100 ? n2 = Math.floor(n2/10) + cgj + n2%10 : n2;
-
+	// Some delay before the game starts
 	setTimeout(() => {
-		message.channel.send("What's **"+n1+(Math.random()>0.6 ? cgj+" " : " ")+ "+" +(Math.random()>0.6 ? cgj+" "+cgj : " ")+n2+"** ?");
-		let startTime = Date.now();
-		let x = setInterval(() => {
-			if ((Date.now() - startTime) / 1000 > 30.000){
-				message.channel.send("It's been 30 seconds! The game is over.\nThe correct answer was **"+res+"**.");
-				clearInterval(x);
+
+		let startTime;
+		let channelId = message.channel.id;
+
+		message.channel.send("What's **"+a+" + "+b+"** ?").then(() => {
+
+			// Record the current timestamp
+			startTime = Date.now();
+
+			// Set a time limit of 30 seconds
+			let timeLimit = setTimeout(() => {
+				message.channel.send("It's been 30 seconds! The game is over.\nThe correct answer was **"+result+"**.");
 				bot.isBusy = false;
-			}
-		}, 1000);
-		let listener = answer => {
-			if (bot.isBusy) {
-				if (answer.content == res) {
-					let sec = (answer.createdTimestamp - startTime) / 1000;
-					bot.isBusy = false;
-					if (sec < Database.highscores.math.score) {
-						message.channel.send(answer.author.username+" won in **"+sec.toFixed(3)+"** seconds! **NEW RECORD!**");
-						Database.update("highscores", {}, {$set:{"math": {"tag": answer.author.tag, "name": answer.author.username, "score": sec}}});
+			}, 30000);
+
+			// Separate event listener for messages
+			let listener = answer => {
+				if (answer.content == result && answer.channel.id == channelId) {
+					let time = (answer.createdTimestamp - startTime) / 1000;
+					clearTimeout(timeLimit);
+
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
+					if (time < highscore) {
+						message.channel.send(endMessage+" **NEW RECORD!**");
+						Database.update("highscores", {}, {$set:{"math": {"tag": answer.author.tag, "name": answer.author.username, "score": time}}});
 					} else {
-						message.channel.send(answer.author.username+" won in **"+sec.toFixed(3)+"** seconds!");
+						message.channel.send(endMessage);
 					}
-					clearInterval(x);
+					
+					bot.isBusy = false;
 					bot.client.removeListener('message', listener);
 				}
-			}
-		};
-		bot.on('message', listener);
+			};
+			bot.on('message', listener);
+		});
 	}, 4000);
 }, "An easy math problem to solve as quick as possible!", false);
 
@@ -161,6 +159,10 @@ bot.add("shuffle", "", message => {
 }, "Be the quickest to find the shuffled word!", false);
 
 
+/**
+ * Executes JavaScript code.
+ * This command is protected and only accessible to the owner.
+ */
 bot.add("js", "[code]", message => {
     let code = message.content.substring(message.content.split(" ")[0].length+1);
 	try {
@@ -171,14 +173,35 @@ bot.add("js", "[code]", message => {
 }, "Executes JavaScript code", true);
 
 
+/**
+ * Pulls code from the repository and restarts
+ * the bot with the new and updated version.
+ * This command is protected and only accessible to the owner.
+ */
 bot.add("update", "", message => {
-	message.channel.send(":inbox_tray: Updating...").then(() => {
+	message.channel.send("📥 Updating...").then(() => {
 		child_process.execSync("git pull");
 		child_process.spawn(process.argv[0], process.argv.slice(1), {stdio: "ignore", detached: true}).unref();
 		bot.client.destroy();
 		process.exit();
 	});
-}, "Updates the bot", true);
+}, "Pulls code from the repository and restarts the bot", true);
 
+
+/**
+ * Shuffle method for strings,
+ * used for the shuffle game.
+ */
+String.prototype.shuffle = function() {
+    let a = this.split("");
+    let n = a.length;
+    for(let i=n-1; i>0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        let tmp = a[i];
+        a[i] = a[j];
+        a[j] = tmp;
+    }
+	return a.join("");
+};
 
 bot.start();

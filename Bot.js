@@ -3,30 +3,46 @@ const Database = require("./Database.js");
 
 class Bot {
 
+    /**
+     * Constructor for the class Bot
+     * @param {string} prefix The default command prefix.
+     * @param {string} token A discord token.
+     */
 	constructor(prefix, token) {
 		this.prefix = prefix;
 		this.token = token;
-        this.client = new Discord.Client();
-        this.commands = [];
         this.isBusy = false;
+        this.client = new Discord.Client();
+
+        // Where command objects are stored
+        this.commands = [];
+
+        // Gather highscores from the database
 		Database.initialize();
 	}
 
+    /**
+     * This methods starts the bot.
+     * It creates a Discord client and sets up event listeners.
+     */
 	start() {
         this.client.login(this.token);
 
         this.client.on("ready", () => {
             console.log("Logged in as "+this.client.user.tag+"!");
             this.client.user.setActivity("minigames ("+this.prefix+"games)");
+
+            // Channel #bot-control in JPDLD's Discord server
             this.client.channels.get("450609429612855296").send(":white_check_mark: Connected !");
         });
 
         let self = this;
         this.client.on("message", message => {
-            /* The bot can't trigger commands */
-            if (message.author.tag == "Minigames#0997") return;
+            
+            // Preventing the bot from triggering anything
+            if (message.author.tag == self.client.user.tag) return;
 
-            /* Check for commands */
+            // Check for command calls
             if (message.content.startsWith(self.prefix)) {
                 let args = message.content.split(" ");
 				let cmd = args[0].toLowerCase().slice(self.prefix.length);
@@ -43,11 +59,9 @@ class Bot {
                         }
                     }
                 }
-                /* Help command equivalent */
+                // Help command equivalent
                 if (cmd == "games" && !self.isBusy) {
-                    const embed = new Discord.RichEmbed()
-                    .setColor('#0099ff')
-                    .setAuthor('Available games', 'https://i.ibb.co/wcsw228/profile.png')
+                    const embed = new Discord.RichEmbed().setColor('#0099ff').setAuthor('Available games', 'https://i.ibb.co/wcsw228/profile.png')
                     for (let object of self.commands) {
                         if (!object.isProtected) {
                             embed.addField(self.prefix+object.cmd+" "+object.args, object.desc);  
@@ -58,11 +72,15 @@ class Bot {
             }
         });
     }
-
-    on(event, action) {
-        this.client.on(event, action);
-    }
     
+    /**
+     * This method adds a command to the bot.
+     * @param {string} cmd The command name.
+     * @param {string} args A description of the arguments needed for the command.
+     * @param {function} func The function to be executed when the command is called.
+     * @param {string} desc A description of the command.
+     * @param {boolean} isProtected If true, the command will be only available to the owner.
+     */
     add(cmd, args, func, desc, isProtected) {
         this.commands.push({
             cmd: cmd,
@@ -71,6 +89,16 @@ class Bot {
             desc: desc,
             isProtected: isProtected
         });
+    }
+
+    /**
+     * This sets up an event listener and calls a function
+     * whenever the event happens.
+     * @param {string} event The name of the event.
+     * @param {function} action The function to be executed.
+     */
+    on(event, action) {
+        this.client.on(event, action);
     }
 
 };

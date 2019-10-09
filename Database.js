@@ -1,6 +1,10 @@
 const MongoClient = require('mongodb').MongoClient;
 const secrets = require('./secrets.json');
 
+/**
+ * This class handles the connection to the database.
+ * It is used to gather current highscores.
+ */
 class Database {
 
 	static initialize(){
@@ -44,7 +48,6 @@ class Database {
 	static sync(){
 		MongoClient.connect(Database.URI, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, db) {
 			if (err) throw err;
-
 			db.db("minigames-database").collection("highscores").find({}).toArray(function(err, results) {
 				if (err) throw err;
 				Database.highscores = results[0];
