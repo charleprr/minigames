@@ -1,5 +1,7 @@
 /**
  * @name Minigames
+ * @description A bot with chat games for Discord
+ * @repository https://github.com/charlypoirier/minigames
  * @author Charly#7870
  */
 
@@ -14,10 +16,14 @@ const child_process = require("child_process");
 // Secrets
 const secrets = require('./secrets.json');
 
+// Create a new Bot
 let bot = new Bot("!", secrets.discordToken);
 
 
-
+/**
+ * 
+ * 
+ */
 bot.add("math", "", message => {
 
 	// Reject the request if the bot is busy
@@ -75,6 +81,10 @@ bot.add("math", "", message => {
 }, "An easy math problem to solve as quick as possible!", false);
 
 
+/**
+ * 
+ * 
+ */
 bot.add("type", "", message => {
 
 	// Reject the request if the bot is busy
@@ -130,44 +140,63 @@ bot.add("type", "", message => {
 }, "A fun typing race between players!", false);
 
 
+/**
+ * 
+ * 
+ */
 bot.add("shuffle", "", message => {
-	if (bot.isBusy) return;
 	
-	message.channel.send("> Current highscore is **"+Number(Database.highscores.shuffle.score).toFixed(3)+"** seconds by "+Database.highscores.shuffle.name+".\n> Get ready...");
+	// Reject the request if the bot is busy
+	if (bot.isBusy) return;
 	bot.isBusy = true;
+	
+	let highscore = Number(Database.highscores.shuffle.score).toFixed(3);
+	let holder = Database.highscores.shuffle.name;
+	message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
 
+	// Getting a random word and shuffling it
 	let word = words();
-	let cgj = "\u034f";
-	let display_word = word;
-	while(display_word == word) display_word = word.shuffle();
+	let shuffledWord = word;
+	while (shuffleWord == word) shuffledWord = shuffledWord.shuffle();
 
+	// Some delay before the game starts
 	setTimeout(() => {
-		message.channel.send("Unshuffle the word __**"+display_word+"**__ !");
-		let startTime = Date.now();
-		let x = setInterval(() => {
-			if ((Date.now() - startTime) / 1000 > 30.000){
-				message.channel.send("It's been 30 seconds! The game is over.\nThe correct answer was **"+word+"**.");
-				clearInterval(x);
+
+		let startTime;
+		let channelId = message.channel.id;
+
+		message.channel.send("Unshuffle the word  __**"+shuffledWord+"**__ !").then(() => {
+
+			// Record the current timestamp
+			startTime = Date.now();
+
+			// Set a time limit of 30 seconds
+			let timeLimit = setTimeout(() => {
+				message.channel.send("It's been 30 seconds! The game is over.");
+				bot.client.removeListener('message', listener);
 				bot.isBusy = false;
-			}
-		}, 1000);
-		let listener = answer => {
-			if (bot.isBusy) {
-				if (answer.content == word) {
-					let sec = (answer.createdTimestamp - startTime) / 1000;
-					bot.isBusy = false;
-					if (sec < Database.highscores.shuffle.score) {
-						message.channel.send(answer.author.username+" won in **"+sec.toFixed(3)+"** seconds! **NEW RECORD!**");
-						Database.update("highscores", {}, {$set:{"shuffle": {"tag": answer.author.tag, "name": answer.author.username, "score": sec}}});
+			}, 30000);
+
+			// Separate event listener for messages
+			let listener = answer => {
+				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
+					let time = (answer.createdTimestamp - startTime) / 1000;
+					clearTimeout(timeLimit);
+
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
+					if (time < highscore) {
+						message.channel.send(endMessage+" **NEW RECORD!**");
+						Database.update("highscores", {}, {$set:{"shuffle": {"tag": answer.author.tag, "name": answer.author.username, "score": time}}});
 					} else {
-						message.channel.send(answer.author.username+" won in **"+sec.toFixed(3)+"** seconds!");
+						message.channel.send(endMessage);
 					}
-					clearInterval(x);
+					
+					bot.isBusy = false;
 					bot.client.removeListener('message', listener);
 				}
-			}
-		};
-		bot.on('message', listener);
+			};
+			bot.on('message', listener);
+		});
 	}, 4000);
 }, "Be the quickest to find the shuffled word!", false);
 
