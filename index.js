@@ -157,7 +157,7 @@ bot.add("shuffle", "", message => {
 	// Getting a random word and shuffling it
 	let word = words();
 	let shuffledWord = word;
-	while (shuffleWord == word) shuffledWord = shuffledWord.shuffle();
+	while (shuffledWord == word) shuffledWord = shuffledWord.shuffle();
 
 	// Some delay before the game starts
 	setTimeout(() => {
