@@ -280,7 +280,7 @@ bot.add("leaderboard", "[game]", message => {
 		let leaderboard = "";
 		for (let i=0; i<3; i++) {
 			if (i <= Database.highscores[game].length-1) {
-				leaderboard += "> "+emojis[i]+" **"+(Database.highscores[game])[i].name+"** ("+(Database.highscores[game])[i].score+"s)\n";
+				leaderboard += "> "+emojis[i]+" **"+(Database.highscores[game])[i].name+"** ("+(Database.highscores[game])[i].score.toFixed(3)+"s)\n";
 			} else {
 				leaderboard += "> "+emojis[i]+" -\n";
 			}
