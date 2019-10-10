@@ -50,7 +50,7 @@ function updateLeaderboard(game, user, score) {
 	if (isAlreadyIn) {
 		arr.splice(oldIndex, 1);
 		arr.push(obj);
-		let newIndex = -1;
+		let newIndex = null;
 		for (let i=0; i<arr.length-1; i++) {
 			for (let j=0; j<arr.length-i-1; j++) {
 				if (arr[j].score > arr[j+1].score) {
