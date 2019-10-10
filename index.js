@@ -55,13 +55,12 @@ bot.add("math", "", message => {
 	if (bot.isBusy) return;
 	bot.isBusy = true;
 
+	let highscore = Infinity;
+	let holder = "-";
 	if (Database.highscores.math[0]) {
-		let highscore = Number(Database.highscores.math[0].score).toFixed(3);
-		let holder = Database.highscores.math[0].name;
+		highscore = Number(Database.highscores.math[0].score).toFixed(3);
+		holder = Database.highscores.math[0].name;
 		message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
-	}else{
-		let highscore = Infinity;
-		let holder = "test";
 	}
 	
 	// Generating the numbers between 21 and 100
