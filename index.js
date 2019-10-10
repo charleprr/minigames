@@ -208,9 +208,9 @@ bot.add("leaderboard", "[game]", message => {
 	let game = message.content.substring(message.content.split(" ")[0].length+1);
 	let emojis = [":first_place:", ":second_place:", ":third_place:"]
 	if (["math", "type", "shuffle"].indexOf(game) != -1) {
-		let leaderboard = "> __"+bot.prefix+game+" leaderboard__";
+		let leaderboard = "";
 		for (let i=0; i<Database.highscores[game].length; i++) {
-			leaderboard += "\n> "+emojis[i]+" (**"+(Database.highscores[game])[i].score+"**s) "+(Database.highscores[game])[i].name;
+			leaderboard += "> "+emojis[i]+" **"+(Database.highscores[game])[i].name+"** ("+(Database.highscores[game])[i].score+"s)\n";
 		}
 		message.channel.send(leaderboard);
 	} else {
