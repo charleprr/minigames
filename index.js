@@ -126,8 +126,7 @@ bot.add("math", "", message => {
 				if (answer.content == result && answer.channel.id == channelId) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
-					let position = updateLeaderboard("math", answer.author, time);
-					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds! ("+position+")";
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
 					if (time < highscore) {
 						message.channel.send(endMessage+" **NEW RECORD!**");
 					} else {
@@ -184,8 +183,7 @@ bot.add("type", "", message => {
 				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
-					let position = updateLeaderboard("type", answer.author, time);
-					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds! ("+position+")";
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
 					if (time < highscore) {
 						message.channel.send(endMessage+" **NEW RECORD!**");
 					} else {
@@ -244,8 +242,7 @@ bot.add("shuffle", "", message => {
 				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
-					let position = updateLeaderboard("shuffle", answer.author, time);
-					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds! ("+position+")";
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
 					if (time < highscore) {
 						message.channel.send(endMessage+" **NEW RECORD!**");
 					} else {
