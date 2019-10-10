@@ -35,8 +35,7 @@ function updateLeaderboard(game, user, score) {
 	let obj = {"tag": user.tag, "name": user.username, "score": score};
 	let arr = Database.highscores[game];
 	let isAlreadyIn = false;
-	let oldScore;
-	let oldIndex;
+	let oldScore, oldIndex;
 
 	for (let i=0; i<arr.length; i++) {
 		if (arr[i].tag == user.tag) {
@@ -79,7 +78,9 @@ function updateLeaderboard(game, user, score) {
 		}
 	}
 
-	Database.update("highscores", {}, {$set:{"math": arr}});
+	let jsonObject = {}
+	jsonObject[game] = arr
+	Database.update("highscores", {}, {$set:jsonObject});
 	Database.highscores[game] = arr;
 	return oldIndex + 1;
 }
@@ -125,8 +126,8 @@ bot.add("math", "", message => {
 				if (answer.content == result && answer.channel.id == channelId) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
-
-					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds! (Moved to "+updateLeaderboard("math", answer.author, time)+")";
+					let position = updateLeaderboard("math", answer.author, time);
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds! ("+position+")";
 					if (time < highscore) {
 						message.channel.send(endMessage+" **NEW RECORD!**");
 					} else {
@@ -183,11 +184,10 @@ bot.add("type", "", message => {
 				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
-
-					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
+					let position = updateLeaderboard("type", answer.author, time);
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds! ("+position+")";
 					if (time < highscore) {
 						message.channel.send(endMessage+" **NEW RECORD!**");
-						Database.update("highscores", {}, {$set:{"type": {"tag": answer.author.tag, "name": answer.author.username, "score": time}}});
 					} else {
 						message.channel.send(endMessage);
 					}
@@ -244,11 +244,10 @@ bot.add("shuffle", "", message => {
 				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
-
-					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
+					let position = updateLeaderboard("shuffle", answer.author, time);
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds! ("+position+")";
 					if (time < highscore) {
 						message.channel.send(endMessage+" **NEW RECORD!**");
-						Database.update("highscores", {}, {$set:{"shuffle": {"tag": answer.author.tag, "name": answer.author.username, "score": time}}});
 					} else {
 						message.channel.send(endMessage);
 					}
