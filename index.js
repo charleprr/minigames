@@ -92,11 +92,12 @@ bot.add("math", "", message => {
 	bot.isBusy = true;
 
 	let highscore = Infinity;
-	let holder = "-";
 	if (Database.highscores.math[0]) {
 		highscore = Number(Database.highscores.math[0].score).toFixed(3);
-		holder = Database.highscores.math[0].name;
+		let holder = Database.highscores.math[0].name;
 		message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
+	} else {
+		message.channel.send("> Get ready...");
 	}
 	
 	// Generating the numbers between 21 and 100
@@ -121,10 +122,9 @@ bot.add("math", "", message => {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
 
-					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds! -> "+updateLeaderboard("math", answer.author, time);;
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds! (Moved to "+updateLeaderboard("math", answer.author, time)+")";
 					if (time < highscore) {
 						message.channel.send(endMessage+" **NEW RECORD!**");
-						//Database.update("highscores", {}, {$set:{"math": {"tag": answer.author.tag, "name": answer.author.username, "score": time}}});
 					} else {
 						message.channel.send(endMessage);
 					}
