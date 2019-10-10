@@ -209,12 +209,16 @@ bot.add("leaderboard", "[game]", message => {
 	let emojis = [":first_place:", ":second_place:", ":third_place:"]
 	if (["math", "type", "shuffle"].indexOf(game) != -1) {
 		let leaderboard = "";
-		for (let i=0; i<Database.highscores[game].length; i++) {
-			leaderboard += "> "+emojis[i]+" **"+(Database.highscores[game])[i].name+"** ("+(Database.highscores[game])[i].score+"s)\n";
+		for (let i=0; i<3; i++) {
+			if (i < Database.highscores[game].length-1) {
+				leaderboard += "> "+emojis[i]+" **"+(Database.highscores[game])[i].name+"** ("+(Database.highscores[game])[i].score+"s)\n";
+			} else {
+				leaderboard += "> "+emojis[i]+" -\n";
+			}
 		}
 		message.channel.send(leaderboard);
 	} else {
-		message.channel.send("This game doesn't exist!")
+		message.channel.send("This game doesn't exist!");
 	}
 }, "Shows the current 3 best players for a given game.", false);
 
