@@ -30,7 +30,7 @@ class Bot {
 
         this.client.on("ready", () => {
             console.log("Logged in as "+this.client.user.tag+"!");
-            this.client.user.setActivity("minigames ("+this.prefix+"games)");
+            this.client.user.setActivity("minigames ("+this.prefix+"help)");
 
             // Channel #bot-control in JPDLD's Discord server
             this.client.channels.get("450609429612855296").send(":white_check_mark: Connected !");
@@ -59,9 +59,9 @@ class Bot {
                         }
                     }
                 }
-                // Help command equivalent
-                if (cmd == "games" && !self.isBusy) {
-                    const embed = new Discord.RichEmbed().setColor('#0099ff').setAuthor('Available games', 'https://i.ibb.co/wcsw228/profile.png')
+                // Help command
+                if (cmd == "help" && !self.isBusy) {
+                    const embed = new Discord.RichEmbed().setColor('#0099ff').setAuthor('Commands', 'https://i.ibb.co/wcsw228/profile.png')
                     for (let object of self.commands) {
                         if (!object.isProtected) {
                             embed.addField(self.prefix+object.cmd+" "+object.args, object.desc);  

@@ -211,7 +211,7 @@ bot.add("leaderboard", "[game]", message => {
 	} else {
 		message.react("👎");
 	}
-}, "Executes JavaScript code", true);
+}, "Shows the current 3 best players for a given game.", true);
 
 
 /**
@@ -225,7 +225,7 @@ bot.add("js", "[code]", message => {
 	} catch(e) {
 		message.channel.send("> "+e+".");
 	}
-}, "Executes JavaScript code", true);
+}, "Executes JavaScript code.", true);
 
 
 /**
@@ -240,7 +240,7 @@ bot.add("update", "", message => {
 		bot.client.destroy();
 		process.exit();
 	});
-}, "Pulls code from the repository and restarts the bot", true);
+}, "Pulls code from the repository and restarts the bot.", true);
 
 
 /**
