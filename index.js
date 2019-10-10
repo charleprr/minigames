@@ -47,7 +47,7 @@ function updateLeaderboard(game, user, score) {
 		}
 	}
 
-	if (arr[oldIndex].score > oldScore) return 0;
+	if (score > oldScore) return 0;
 
 	if (isAlreadyIn) {
 		arr.splice(oldIndex, 1);
