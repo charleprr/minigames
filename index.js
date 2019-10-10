@@ -206,12 +206,17 @@ bot.add("shuffle", "", message => {
  */
 bot.add("leaderboard", "[game]", message => {
 	let game = message.content.substring(message.content.split(" ")[0].length+1);
+	let emojis = [":first_place:", ":second_place:", ":third_place:"]
 	if (["math", "type", "shuffle"].indexOf(game) != -1) {
-		message.react("👍");
+		let leaderboard = "**Leaderboard**";
+		for (let i=0; i<Database.highscores[game].length; i++) {
+			leaderboard += "\n> "+emojis[i]+" "+(Database.highscores[game])[i].name;
+		}
+		message.channel.send(leaderboard);
 	} else {
-		message.react("👎");
+		message.channel.send("This game doesn't exist!")
 	}
-}, "Shows the current 3 best players for a given game.", true);
+}, "Shows the current 3 best players for a given game.", false);
 
 
 /**
@@ -249,10 +254,11 @@ bot.add("update", "", message => {
  */
 String.prototype.shuffle = function() {
     let a = this.split("");
-    let n = a.length;
+	let n = a.length;
+	let j, tmp;
     for(let i=n-1; i>0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        let tmp = a[i];
+        j = Math.floor(Math.random() * (i + 1));
+        tmp = a[i];
         a[i] = a[j];
         a[j] = tmp;
     }
