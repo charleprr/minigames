@@ -126,14 +126,8 @@ bot.add("math", "", message => {
 				if (answer.content == result && answer.channel.id == channelId) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
-
 					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
-					if (time < highscore) {
-						message.channel.send(endMessage+" **NEW RECORD!**");
-					} else {
-						message.channel.send(endMessage);
-					}
-					
+					message.channel.send(endMessage+(time<highscore ? " **NEW RECORD!**":""));
 					updateLeaderboard("math", answer.author, time);
 					bot.isBusy = false;
 					bot.client.removeListener('message', listener);
@@ -190,14 +184,8 @@ bot.add("type", "", message => {
 				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
-					
 					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
-					if (time < highscore) {
-						message.channel.send(endMessage+" **NEW RECORD!**");
-					} else {
-						message.channel.send(endMessage);
-					}
-					
+					message.channel.send(endMessage+(time<highscore ? " **NEW RECORD!**":""));
 					updateLeaderboard("type", answer.author, time);
 					bot.isBusy = false;
 					bot.client.removeListener('message', listener);
@@ -256,14 +244,8 @@ bot.add("shuffle", "", message => {
 				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
-					
 					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
-					if (time < highscore) {
-						message.channel.send(endMessage+" **NEW RECORD!**");
-					} else {
-						message.channel.send(endMessage);
-					}
-					
+					message.channel.send(endMessage+(time<highscore ? " **NEW RECORD!**":""));
 					updateLeaderboard("shuffle", answer.author, time);
 					bot.isBusy = false;
 					bot.client.removeListener('message', listener);
