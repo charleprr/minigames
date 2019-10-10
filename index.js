@@ -21,6 +21,31 @@ let bot = new Bot("!", secrets.discordToken);
 
 
 /**
+ * Updates the database to store highscores.
+ * @param {string} game
+ * @param {User} user
+ * @param {number} score
+ * Returns 3 if user MOVED to 3rd place
+ * Returns 2 if user MOVED to 2nd place
+ * Returns 1 if user MOVED to 1st place
+ * Returns 0 otherwise (stayed or didn't beat anything)
+ */
+function updateLeaderboard(game, user, score) {
+
+	if (!(Database.highscores[game])[0]) {
+		Database.update("highscores", {}, {$set:{game: [{"tag": user.tag, "name": user.username, "score": score}]}});
+		return 1;
+	} else {
+		for (let i=Database.highscores[game].length-1; (i>=0 && (Database.highscores[game])[i].score>score); i--) {
+			(Database.highscores[game])[i+1] = Database.highscores[game][i];
+		}
+		(Database.highscores[game])[i+1] = {"tag": user.tag, "name": user.username, "score": score};
+	}
+
+}
+
+
+/**
  * 
  * 
  */
@@ -56,7 +81,7 @@ bot.add("math", "", message => {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
 
-					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
+					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds! -> "+updateLeaderboard("math", answer.author, time);;
 					if (time < highscore) {
 						message.channel.send(endMessage+" **NEW RECORD!**");
 						//Database.update("highscores", {}, {$set:{"math": {"tag": answer.author.tag, "name": answer.author.username, "score": time}}});
@@ -207,7 +232,7 @@ bot.add("shuffle", "", message => {
 bot.add("leaderboard", "[game]", message => {
 	let game = message.content.substring(message.content.split(" ")[0].length+1);
 	let emojis = [":first_place:", ":second_place:", ":third_place:"]
-	if (["math", "type", "shuffle"].indexOf(game) != -1) {
+	if (Database.highscores[game]) {
 		let leaderboard = "";
 		for (let i=0; i<3; i++) {
 			if (i < Database.highscores[game].length-1) {
