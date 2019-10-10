@@ -102,7 +102,7 @@ bot.add("math", "", message => {
 		let holder = Database.highscores.math[0].name;
 		message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
 	} else {
-		message.channel.send("> Get ready...");
+		message.channel.send(">There is currently no highscore.\n> Get ready...");
 	}
 	
 	// Generating the numbers between 21 and 100
@@ -162,7 +162,7 @@ bot.add("type", "", message => {
 		let holder = Database.highscores.type[0].name;
 		message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
 	} else {
-		message.channel.send("> Get ready...");
+		message.channel.send(">There is currently no highscore.\n> Get ready...");
 	}
 
 	// Getting a random word
@@ -220,7 +220,7 @@ bot.add("shuffle", "", message => {
 		let holder = Database.highscores.shuffle[0].name;
 		message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
 	} else {
-		message.channel.send("> Get ready...");
+		message.channel.send(">There is currently no highscore.\n> Get ready...");
 	}
 
 	// Getting a random word and shuffling it
