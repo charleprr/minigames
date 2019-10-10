@@ -159,10 +159,15 @@ bot.add("type", "", message => {
 	// Reject the request if the bot is busy
 	if (bot.isBusy) return;
 	bot.isBusy = true;
-	
-	let highscore = Number(Database.highscores.type.score).toFixed(3);
-	let holder = Database.highscores.type.name;
-	message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
+
+	let highscore = Infinity;
+	if (Database.highscores.type[0]) {
+		highscore = Number(Database.highscores.type[0].score).toFixed(3);
+		let holder = Database.highscores.type[0].name;
+		message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
+	} else {
+		message.channel.send("> Get ready...");
+	}
 
 	// Getting a random word
 	let word = words();
@@ -216,10 +221,15 @@ bot.add("shuffle", "", message => {
 	// Reject the request if the bot is busy
 	if (bot.isBusy) return;
 	bot.isBusy = true;
-	
-	let highscore = Number(Database.highscores.shuffle.score).toFixed(3);
-	let holder = Database.highscores.shuffle.name;
-	message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
+
+	let highscore = Infinity;
+	if (Database.highscores.shuffle[0]) {
+		highscore = Number(Database.highscores.shuffle[0].score).toFixed(3);
+		let holder = Database.highscores.shuffle[0].name;
+		message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
+	} else {
+		message.channel.send("> Get ready...");
+	}
 
 	// Getting a random word and shuffling it
 	let word = words();
