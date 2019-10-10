@@ -30,8 +30,8 @@ bot.add("math", "", message => {
 	if (bot.isBusy) return;
 	bot.isBusy = true;
 
-	let highscore = Number(Database.highscores.math.score).toFixed(3);
-	let holder = Database.highscores.math.name;
+	let highscore = Number(Database.highscores.math[0].score).toFixed(3);
+	let holder = Database.highscores.math[0].name;
 	message.channel.send("> Current highscore is **"+highscore+"** seconds by "+holder+".\n> Get ready...");
 	
 	// Generating the numbers between 21 and 100
@@ -59,7 +59,7 @@ bot.add("math", "", message => {
 					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
 					if (time < highscore) {
 						message.channel.send(endMessage+" **NEW RECORD!**");
-						Database.update("highscores", {}, {$set:{"math": {"tag": answer.author.tag, "name": answer.author.username, "score": time}}});
+						//Database.update("highscores", {}, {$set:{"math": {"tag": answer.author.tag, "name": answer.author.username, "score": time}}});
 					} else {
 						message.channel.send(endMessage);
 					}
@@ -199,6 +199,19 @@ bot.add("shuffle", "", message => {
 		});
 	}, 4000);
 }, "Be the quickest to find the shuffled word!", false);
+
+
+/**
+ * Shows the current 3 best players for a given game.
+ */
+bot.add("leaderboard", "[game]", message => {
+	let game = message.content.substring(message.content.split(" ")[0].length+1);
+	if (game in ["math", "type", "shuffle"]) {
+		message.react("👍");
+	} else {
+		message.react("👎");
+	}
+}, "Executes JavaScript code", true);
 
 
 /**
