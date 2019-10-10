@@ -46,7 +46,7 @@ function updateLeaderboard(game, user, score) {
 		}
 	}
 
-	if (score > oldScore) return 0;
+	if (score > oldScore) return;
 
 	if (isAlreadyIn) {
 		arr.splice(oldIndex, 1);
@@ -82,7 +82,6 @@ function updateLeaderboard(game, user, score) {
 	jsonObject[game] = arr
 	Database.update("highscores", {}, {$set:jsonObject});
 	Database.highscores[game] = arr;
-	return oldIndex + 1;
 }
 
 
