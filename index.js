@@ -208,7 +208,7 @@ bot.add("leaderboard", "[game]", message => {
 	let game = message.content.substring(message.content.split(" ")[0].length+1);
 	let emojis = [":first_place:", ":second_place:", ":third_place:"]
 	if (["math", "type", "shuffle"].indexOf(game) != -1) {
-		let leaderboard = "> "+bot.prefix+game+" **leaderboard** :trophy:";
+		let leaderboard = "> __"+bot.prefix+game+" leaderboard__";
 		for (let i=0; i<Database.highscores[game].length; i++) {
 			leaderboard += "\n> "+emojis[i]+" (**"+(Database.highscores[game])[i].score+"**s) "+(Database.highscores[game])[i].name;
 		}
