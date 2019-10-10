@@ -275,7 +275,7 @@ bot.add("leaderboard", "[game]", message => {
 	if (Database.highscores[game]) {
 		let leaderboard = "";
 		for (let i=0; i<3; i++) {
-			if (i < Database.highscores[game].length-1) {
+			if (i <= Database.highscores[game].length-1) {
 				leaderboard += "> "+emojis[i]+" **"+(Database.highscores[game])[i].name+"** ("+(Database.highscores[game])[i].score+"s)\n";
 			} else {
 				leaderboard += "> "+emojis[i]+" -\n";
