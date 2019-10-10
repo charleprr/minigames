@@ -32,16 +32,52 @@ let bot = new Bot("!", secrets.discordToken);
  */
 function updateLeaderboard(game, user, score) {
 
-	if (!(Database.highscores[game])[0]) {
-		Database.update("highscores", {}, {$set:{game: [{"tag": user.tag, "name": user.username, "score": score}]}});
-		return 1;
-	} else {
-		for (let i=Database.highscores[game].length-1; (i>=0 && (Database.highscores[game])[i].score>score); i--) {
-			(Database.highscores[game])[i+1] = Database.highscores[game][i];
+	let obj = {"tag": user.tag, "name": user.username, "score": score};
+	let arr = Database.highscores[game];
+	let isAlreadyIn = false;
+	let index;
+
+	for (let i=0; i<arr.length; i++) {
+		if (arr[i].tag == user.tag) {
+			isAlreadyIn = true;
+			index = i;
+			break;
 		}
-		(Database.highscores[game])[i+1] = {"tag": user.tag, "name": user.username, "score": score};
 	}
 
+	if (isAlreadyIn) {
+		arr.splice(index, 1);
+		arr.push(obj);
+		let newIndex = -1;
+		for (let i=0; i<arr.length-1; i++) {
+			for (let j=0; j<arr.length-i-1; j++) {
+				if (arr[j].score > arr[j+1].score) {
+					if (arr[j].tag == obj.tag) newIndex = j+1;
+					temp = arr[j];
+					arr[j] = arr[j+1];
+					arr[j+1] = temp;
+				}
+			}
+		}
+		if (newIndex != index) index = newIndex + 1;
+		else index = 0;
+	} else {
+		arr.push(obj);
+		for (let i=0; i<arr.length-1; i++) {
+			for (let j=0; j<arr.length-i-1; j++) {
+				if (arr[j].score > arr[j+1].score) {
+					if (arr[j].tag == obj.tag) index = j+1;
+					temp = arr[j];
+					arr[j] = arr[j+1];
+					arr[j+1] = temp;
+				}
+			}
+		}
+	}
+
+	Database.update("highscores", {}, {$set:{"math": arr}});
+	Database.highscores[game] = arr;
+	return index + 1;
 }
 
 
