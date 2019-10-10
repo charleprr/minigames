@@ -35,18 +35,20 @@ function updateLeaderboard(game, user, score) {
 	let obj = {"tag": user.tag, "name": user.username, "score": score};
 	let arr = Database.highscores[game];
 	let isAlreadyIn = false;
-	let index;
+	let oldScore;
+	let oldIndex;
 
 	for (let i=0; i<arr.length; i++) {
 		if (arr[i].tag == user.tag) {
 			isAlreadyIn = true;
-			index = i;
+			oldScore = arr[i].score;
+			oldIndex = i;
 			break;
 		}
 	}
 
 	if (isAlreadyIn) {
-		arr.splice(index, 1);
+		arr.splice(oldIndex, 1);
 		arr.push(obj);
 		let newIndex = -1;
 		for (let i=0; i<arr.length-1; i++) {
@@ -59,14 +61,14 @@ function updateLeaderboard(game, user, score) {
 				}
 			}
 		}
-		if (newIndex != index) index = newIndex + 1;
-		else index = 0;
+		if (newIndex != oldIndex) oldIndex = newIndex + 1;
+		else oldIndex = 0;
 	} else {
 		arr.push(obj);
 		for (let i=0; i<arr.length-1; i++) {
 			for (let j=0; j<arr.length-i-1; j++) {
 				if (arr[j].score > arr[j+1].score) {
-					if (arr[j].tag == obj.tag) index = j+1;
+					if (arr[j].tag == obj.tag) oldIndex = j+1;
 					temp = arr[j];
 					arr[j] = arr[j+1];
 					arr[j+1] = temp;
@@ -77,7 +79,7 @@ function updateLeaderboard(game, user, score) {
 
 	Database.update("highscores", {}, {$set:{"math": arr}});
 	Database.highscores[game] = arr;
-	return index + 1;
+	return oldIndex + 1;
 }
 
 
