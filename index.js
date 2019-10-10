@@ -206,7 +206,7 @@ bot.add("shuffle", "", message => {
  */
 bot.add("leaderboard", "[game]", message => {
 	let game = message.content.substring(message.content.split(" ")[0].length+1);
-	if (game in ["math", "type", "shuffle"]) {
+	if (["math", "type", "shuffle"].indexOf(game) != -1) {
 		message.react("👍");
 	} else {
 		message.react("👎");
