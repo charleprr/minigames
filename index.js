@@ -12,6 +12,7 @@ const Database = require("./Database.js");
 // Modules
 const words = require("random-words");
 const child_process = require("child_process");
+const checkWord = require('check-word');
 
 // Secrets
 const secrets = require('./secrets.json');
@@ -122,7 +123,7 @@ bot.add("math", "", message => {
 
 			// Separate event listener for messages
 			let listener = answer => {
-				if (answer.content == result && answer.channel.id == channelId) {
+				if (answer.content == result && answer.channel.id == channelId && !answer.author.bot) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
 					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
@@ -180,7 +181,7 @@ bot.add("type", "", message => {
 
 			// Separate event listener for messages
 			let listener = answer => {
-				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
+				if (answer.content.toLowerCase() == word && answer.channel.id == channelId && !answer.author.bot) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
 					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
@@ -240,7 +241,7 @@ bot.add("shuffle", "", message => {
 
 			// Separate event listener for messages
 			let listener = answer => {
-				if (answer.content.toLowerCase() == word && answer.channel.id == channelId) {
+				if (answer.content.toLowerCase() == word && answer.channel.id == channelId && !answer.author.bot) {
 					let time = (answer.createdTimestamp - startTime) / 1000;
 					clearTimeout(timeLimit);
 					let endMessage = answer.author.username+" won in **"+time.toFixed(3)+"** seconds!";
@@ -262,6 +263,111 @@ bot.add("shuffle", "", message => {
 	}, 4000);
 }, "Be the quickest to find the shuffled word!", false);
 
+bot.add("scrabble", "", message => {
+	
+	// Reject the request if the bot is busy
+	if (bot.isBusy) return;
+	bot.isBusy = true;
+
+	let highscore = -1; //-1 < 0
+	if (Database.highscores.scrabble[0]) {
+		highscore = Database.highscores.scrabble[0].score;
+		let holder = Database.highscores.scrabble[0].name;
+		message.channel.send("> Current highscore is **"+highscore+"** words by "+holder+".\n> Get ready...");
+	} else {
+		message.channel.send("> There is currently no highscore.\n> Get ready...");
+	}
+
+	//get random string of letters.
+	let word = "";
+	function getWord() {
+		let letters = "abcdefghijklmnopqrstuvwxyz";
+		let toReturn = "";
+		for (var i = 0; i < 10; i++) {
+			toReturn = toReturn.concat(letters[Math.floor(Math.random() * letters.length)]);
+		}
+		return toReturn;
+	}
+
+	//make new string if no vowels.
+	while (!word.match(/[aeiouAEIOU]/)) word = getWord(); 
+
+	//stuff regarding words found
+	let wordsfound = 0;
+	let wrdsfound = [];
+
+	// Some delay before the game starts
+	setTimeout(() => {
+
+		let startTime;
+		let channelId = message.channel.id;
+
+		message.channel.send(`Find as many words as you can from the letters __**${word}**__ in 60 seconds! You can only use each letter once.`).then(() => {
+
+			// Separate event listener for messages
+			let listener = answer => {
+				if (answer.author.id == message.author.id && answer.channel.id == channelId && !answer.author.bot) {
+					function scramble(world, seed) {
+						var arr = new Array(256);
+						var i = 0;
+				
+						for (i = 0; i < 256; i++) {
+							arr[i] = 0;
+						}
+				
+						for (i = 0; i < world.length; i++) {
+							arr[world.charCodeAt(i)] += 1;
+						}
+				
+						for (i = 0; i < seed.length; i++) {
+							arr[seed.charCodeAt(i)] -= 1;
+							if (arr[seed.charCodeAt(i)] < 0) {
+								return false;
+							}
+						}
+				
+						return true;
+					}
+				
+					if (scramble(word, answer.content)) {
+						let words = checkWord('en');
+						if (words.check(answer.content)) {
+							if (!wrdsfound.includes(answer.content)) {
+								wordsfound++;
+								answer.react("✅");
+								wrdsfound.push(answer.content)
+							} else {
+								answer.channel.send(`❌ You already found that word.`)
+							}
+						} else {
+							answer.channel.send(`❌ That's not a word.`)
+						}
+					} else {
+						answer.channel.send(`❌ That word includes characters not in the letters __**${word}**__`);
+					}
+				}
+			};
+			bot.on('message', listener);
+
+			// Set a time limit of 60 seconds
+			let timeLimit = setTimeout(() => {
+				function getwinmsg() {
+					updateLeaderboard("scrabble", message.author, wordsfound);
+					let winmsg = `It's been a minute, scrabble game is over. You found __**${wordsfound}**__ ${wordsfound !== 1 ? "words" : "word"}.`;
+					if (highscore < wordsfound) {
+						winmsg = winmsg.concat(" **NEW RECORD!**");
+					}
+					return winmsg;
+				}
+				message.channel.send(getwinmsg());
+				bot.client.removeListener('message', listener);
+				bot.isBusy = false;
+			}, 60000);
+		});
+	}, 4000);
+	
+	
+}, "Find as many words as you can from a given list of letters!", false)
 
 /**
  * Shows the current 3 best players for a given game.
