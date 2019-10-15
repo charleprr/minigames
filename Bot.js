@@ -40,7 +40,7 @@ class Bot {
         this.client.on("message", message => {
             
             // Preventing the bot and other bots from triggering anything
-            if (message.author.tag == self.client.user.tag && !message.author.bot) return;
+            if (message.author.tag == self.client.user.tag || message.author.bot) return;
 
             // Check for command calls
             if (message.content.startsWith(self.prefix)) {
