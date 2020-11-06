@@ -16,7 +16,7 @@ module.exports = {
 
         const m = await message.channel.send("Get ready...");
         await new Promise(r => setTimeout(r, 2500));
-        await m.edit(`Unshuffle __**${shuffled}**__ as fast as possible!`);
+        await m.edit(`Unshuffle **${shuffled}** as fast as possible!`);
         const start = Date.now();
 
         // Temporary message listener
@@ -41,7 +41,7 @@ module.exports = {
 
         // Timeout function
         const timeout = setTimeout(() => {
-            message.channel.send(`It's been 20 seconds! The word was __**${word}**__.`);
+            message.channel.send(`It's been 20 seconds! The word was **${word}**.`);
             bot.removeListener("message", onAnswer);
         }, 20000);
 

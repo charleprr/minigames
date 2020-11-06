@@ -14,7 +14,7 @@ module.exports = {
 
         const m = await message.channel.send("Get ready...");
         await new Promise(r => setTimeout(r, 2500));
-        await m.edit(`Type __**${word}**__ as fast as possible!`);
+        await m.edit(`Type **${word}** as fast as possible!`);
         const start = Date.now();
 
         // Temporary message listener
