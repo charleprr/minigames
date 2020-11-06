@@ -1,2 +1,8 @@
+# Dependencies
 node_modules/
-secrets.json
+
+# Database
+database/
+
+# Configuration file
+config.json
