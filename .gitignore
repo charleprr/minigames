@@ -2,7 +2,7 @@
 node_modules/
 
 # Database
-database/*
+database/*.json
 
 # Configuration file
 config.json
