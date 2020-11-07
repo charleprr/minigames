@@ -1,6 +1,6 @@
 const fs = require(`fs`);
 const config = require(`./config.json`);
-const bot = new (require(`./libraries/bot.js`))(`!`, config.token, config.owner);
+const bot = new (require(`./libs/bot.js`))(`!`, config.token, config.owner);
 
 fs.readdir(`./games/`, (err, files) => {
     if (err) throw err;
