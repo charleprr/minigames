@@ -1,4 +1,4 @@
-const leaderboard = require("../libraries/leaderboard");
+const leaderboard = require("../libs/leaderboard");
 
 module.exports = {
 
@@ -18,33 +18,39 @@ module.exports = {
         await m.edit(`Solve **${A} + ${B}** as fast as possible!`);
         const start = Date.now();
 
-        // Temporary message listener
-        const onAnswer = a => {
-            if (a.channel != message.channel || a.author.bot) return;
+        return new Promise(resolve => {
 
-            // If the answer === sum, user wins!
-            if (a.content == SUM) {
-                const time = (a.createdTimestamp - start) / 1000;
-                message.channel.send(`${a.member.displayName} won in \`${time.toFixed(3)}\` seconds!`);
+            // Temporary message listener
+            const onAnswer = a => {
+                if (a.channel != message.channel || a.author.bot) return;
 
-                // Automatically update the leaderboard
-                leaderboard.register(message.guild.id, module.exports.name, {
-                    player: a.author.id, // The user ID
-                    score: time          // Any kind of score (lowest is best)
-                });
+                // If the answer === sum, user wins!
+                if (a.content == SUM) {
+                    const time = (a.createdTimestamp - start) / 1000;
+                    message.channel.send(`${a.member.displayName} won in \`${time.toFixed(3)}\` seconds!`);
 
+                    // Automatically update the leaderboard
+                    leaderboard.register(message.guild.id, module.exports.name, {
+                        player: a.author.id, // The user ID
+                        score: time          // Any kind of score (lowest is best)
+                    });
+
+                    bot.removeListener("message", onAnswer);
+                    clearTimeout(timeout);
+                    resolve();
+                }
+            };
+
+            // Timeout function
+            const timeout = setTimeout(() => {
+                message.channel.send(`It's been 20 seconds! The answer was **${SUM}**.`);
                 bot.removeListener("message", onAnswer);
-                clearTimeout(timeout);
-            }
-        };
+                resolve();
+            }, 20000);
 
-        // Timeout function
-        const timeout = setTimeout(() => {
-            message.channel.send(`It's been 20 seconds! The answer was **${SUM}**.`);
-            bot.removeListener("message", onAnswer);
-        }, 20000);
+            bot.on("message", onAnswer);
 
-        bot.on("message", onAnswer);
+        });
     }
 
 };
