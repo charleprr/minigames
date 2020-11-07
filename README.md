@@ -18,8 +18,9 @@ Run `npm start` to start the bot.
 ## Contribute
 I would greatly appreciate stars, issues, forks and pull requests.
 
-To add a new game, you just have to add a new javascript file in the `games` folders, it will automatically be added to the bot commands.<br/>
-Feel free to look at `games/math.js` as a game example to add your own games!
+Feel free to look at `games/math.js` as a game example to add your own games!<br/>
+To add a new game, you just have to add a new javascript file in the `games` folders, it will automatically be added to the bot commands.
+
 
 ## License
 Minigames is released under the MIT license.
