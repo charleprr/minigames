@@ -27,7 +27,7 @@ module.exports = {
                 // If the answer === sum, user wins!
                 if (a.content == SUM) {
                     const time = (a.createdTimestamp - start) / 1000;
-                    message.channel.send(`${a.member.displayName} won in \`${time.toFixed(3)}\` seconds!`);
+                    message.channel.send(`${a.author.username} won in \`${time.toFixed(3)}\` seconds!`);
 
                     // Automatically update the leaderboard
                     leaderboard.register(message.guild.id, module.exports.name, {
