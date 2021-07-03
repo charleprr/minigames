@@ -1,22 +1,24 @@
 {
   "name": "minigames",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.0.0",
+  "description": "A Discord bot full of chat games!",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charlypoirier/minigames.git"
+  },
   "keywords": [
     "discord",
-    "minigames",
-    "chat"
+    "bot",
+    "minigames"
   ],
-  "author": "Charly#7870",
+  "author": "charlypoirier",
   "license": "ISC",
-  "dependencies": {
-    "discord.js": "^11.5.1",
-    "mongodb": "^3.3.2",
-    "random-words": "^1.1.0",
-    "simple-git": "^1.126.0"
-  }
+  "bugs": {
+    "url": "https://github.com/charlypoirier/minigames/issues"
+  },
+  "homepage": "https://github.com/charlypoirier/minigames#readme"
 }
