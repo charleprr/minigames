@@ -1,2 +1,5 @@
+# Dependencies
 node_modules/
-secrets.json
+
+# Configuration
+config.json
