@@ -1,5 +1,8 @@
 # Dependencies
 node_modules/
 
+# Database
+database/
+
 # Configuration
 config.json
