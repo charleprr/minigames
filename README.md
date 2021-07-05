@@ -13,14 +13,14 @@ module.exports = {
 };
 
 module.exports.execute = (done) => {
-    /* 
+    /**
      * Write your game's
      * code here
      */
     done(); // Call done() when the game is over
 }
 ```
-
+q
 Feel free to create a pull request to add games.
 
 ## Configuration

@@ -1,8 +1,9 @@
 const randword = require("random-words");
 
 module.exports = {
-    name: "typerace",
-    description: "Are you the fastest typer?"
+    label: "Typerace",
+    description: "Are you the fastest typer?",
+    emoji: "⌨️"
 };
 
 module.exports.execute = async (client, channel, done) => {
@@ -20,13 +21,17 @@ module.exports.execute = async (client, channel, done) => {
             channel.send(`${a.author.username} won in \`${time.toFixed(3)}\` seconds!`);
             client.removeListener("message", onAnswer);
             clearTimeout(timeout);
-            done();
+            // We have a winner, let's register his score
+            // in the typerace leaderboard
+            done(a.author, time.toFixed(3));
         }
     };
 
     const timeout = setTimeout(() => {
         channel.send("It's been 20 seconds! The game is over.");
         client.removeListener("message", onAnswer);
+        // Nobody answered after 20 seconds,
+        // we exit with no score to save
         done();
     }, 20000);
 
