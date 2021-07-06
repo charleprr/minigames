@@ -1,9 +1,13 @@
 const randword = require("random-words");
 
 module.exports = {
+    // Game description
     label: "Typerace",
     description: "Are you the fastest typer?",
-    emoji: "⌨️"
+    emoji: "⌨️",
+
+    // Leaderboard configuration
+    higherFirst: false // (the lower the score, the better) 
 };
 
 module.exports.execute = async (client, channel, done) => {
