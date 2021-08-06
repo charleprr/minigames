@@ -70,6 +70,10 @@ client.on("interactionCreate", async interaction => {
     if (interaction.isCommand()) {
         commands.get(interaction.commandName)?.execute(interaction);
     }
+
+    if (interaction.isButton()) {
+        commands.get(interaction.customId)?.execute(interaction);
+    }
 });
 
 

@@ -1,21 +1,21 @@
-import randword from "random-words";
-
-export const label = "Typerace";
-export const description = "Are you the fastest typer?";
-export const emoji = "🙌🏻";
+export const label = "Math";
+export const description = "Solve simple math problems as quick as possible!";
+export const emoji = "🧮";
 export const higherFirst = false; // (the lower the score, the better)
 
 export async function execute (interaction) {
 
-    const word = randword();
     await interaction.reply("Get ready...");
     await new Promise(r => setTimeout(r, 2500));
-    await interaction.editReply(`Type **${word}** as fast as possible!`);
+
+    const A = Math.floor(Math.random() * 90) + 10;
+    const B = Math.floor(Math.random() * 90) + 10;
+    await interaction.editReply(`What's **${A} + ${B}** ?`);
     const start = Date.now();
 
     const onAnswer = a => {
         if (a.channel != interaction.channel || a.author.bot) return;
-        if (a.content.toLowerCase() === word) {
+        if (a.content == A+B) {
             const time = (Date.now() - start) / 1000;
             interaction.channel.send(`${a.member.displayName} won in \`${time.toFixed(3)}\` seconds!`);
             interaction.client.removeListener("messageCreate", onAnswer);
