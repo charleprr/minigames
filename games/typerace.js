@@ -1,9 +1,10 @@
+import { Leaderboard } from "../libraries/leaderboard.js";
 import randword from "random-words";
 
-export const label = "Typerace";
+export const name = "typerace";
 export const description = "Are you the fastest typer?";
 export const emoji = "🙌🏻";
-export const higherFirst = false; // (the lower the score, the better)
+export const leaderboard = new Leaderboard("typerace", false);
 
 export async function execute (interaction) {
 
@@ -17,21 +18,16 @@ export async function execute (interaction) {
         if (a.channel != interaction.channel || a.author.bot) return;
         if (a.content.toLowerCase() === word) {
             const time = (Date.now() - start) / 1000;
-            interaction.channel.send(`${a.member.displayName} won in \`${time.toFixed(3)}\` seconds!`);
+            interaction.followUp(`${a.member.displayName} won in \`${time.toFixed(3)}\` seconds!`);
             interaction.client.removeListener("messageCreate", onAnswer);
             clearTimeout(timeout);
-            // We have a winner, let's register his score
-            // in the typerace leaderboard
-            // done(a.author, time.toFixed(3));
+            leaderboard.add(a.member, { value: time.toFixed(3), unit: "s" });
         }
     };
 
     const timeout = setTimeout(() => {
-        interaction.channel.send("It's been 20 seconds! The game is over.");
+        interaction.followUp("It's been 20 seconds! The game is over.");
         interaction.client.removeListener("messageCreate", onAnswer);
-        // Nobody answered after 20 seconds,
-        // we exit with no score to save
-        // done();
     }, 20000);
 
     interaction.client.on("messageCreate", onAnswer);

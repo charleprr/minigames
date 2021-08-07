@@ -1,4 +1,3 @@
-// import { Leaderboard } from "./libraries/leaderboard.js";
 import Discord from "discord.js";
 import config from "./config.js";
 import fs from "fs"
@@ -10,84 +9,88 @@ const client = new Discord.Client({
     ]
 });
 
-const files = fs.readdirSync("./commands");
-const commands = new Map();
-
+// Load games
+const games = new Map();
+const files = fs.readdirSync("./games");
 files.forEach(async file => {
-    let command = await import(`./commands/${file}`);
-    // command.leaderboard = new Leaderboard(command.label, command.higherFirst);
-
-    commands.set(command.label.toLowerCase(), command);
+    let game = await import("./games/" + file);
+    games.set(game.name, game);
 });
 
-
-client.on("messageCreate", async m => {
-    if (!m.content.startsWith(config.prefix)) return;
-    if (m.author.bot) return;
-    
-    let label = m.content.substring(config.prefix.length).split(" ")[0].toLowerCase();
-
-    // Help command
-    if (label == "help") {
-        const menu = new Discord.MessageSelectMenu().setCustomId("commands").setPlaceholder("Alchemirs");
-        commands.forEach(value => {
-            menu.addOptions([{
-                label: "/" + value.label.toLowerCase(),
-                description: value.description,
-                emoji: value.emoji,
-                value: value.label.toLowerCase()
-            }])
-        });
-        return m.channel.send({
-            content: "You needed help?",
-            components: [new Discord.MessageActionRow().addComponents(menu)]
-        });
-    }
-    
-    if (label == "js" && m.author.id == client.application?.owner.id) {
-        let output;
-        try { output = eval(m.content.slice(config.prefix.length+1)); }
-        catch (e) { output = e.message; }
-        return m.channel.send(`**Result**: ${output}`, { split: { char: ' ', maxLength: 2000 } });
-    }
-
-    let game = commands.get(label);
-    
-    // Game commands
-    if (game) {
-        game.execute(client, m.channel, (user, score) => {
-            if (!user || !score) return;
-            game.leaderboard.save(user, score);
-        });
-    } else {
-        m.channel.send("Unknown game");
-    }
-
-});
-
-
+// Interactions
 client.on("interactionCreate", async interaction => {
-    if (interaction.isCommand()) {
-        commands.get(interaction.commandName)?.execute(interaction);
-    }
+    const command = interaction.commandName || interaction.values[0] || interaction.customId;
+    switch (command) {
+        // How to use Minigames
+        case "help":
+            const selectMenu = new Discord.MessageSelectMenu();
+            selectMenu.setCustomId("games");
+            selectMenu.addOptions(
+                Array.from(games.values()).map(game => Object({
+                    name: "/" + game.name,
+                    description: game.description,
+                    emoji: game.emoji,
+                    value: game.name
+                }))
+            );
+            const actionRow = new Discord.MessageActionRow().addComponents(selectMenu);
+            interaction.reply({ content: "Select a game", components: [actionRow]});
+            break;
 
-    if (interaction.isButton()) {
-        commands.get(interaction.customId)?.execute(interaction);
+        // Leaderboards
+        case "top":
+            let name = interaction.options.get("game")?.value;
+            let leaderboard = games.get(name).leaderboard;
+
+            await interaction.deferReply();
+            await interaction.editReply({files: [ await leaderboard.render() ]});
+
+            break;
+        
+        // Games
+        default:
+            games.get(command)?.execute(interaction);
     }
 });
+
+
+async function deploy() {
+
+    const commands = [
+        {
+            name: "help",
+            description: "How to use Minigames"
+        },
+        {
+            name: "top",
+            description: "Shows the current leaderboard for a game",
+            options: [{
+                name: "game",
+                type: "STRING",
+                description: "Which game?",
+                required: true,
+                choices: Array.from(games.values())
+                    .filter(game => game.leaderboard)
+                    .map(game => Object({ name: game.name, value: game.name}))
+            }]
+        }
+    ];
+
+    games.forEach(game => {
+        commands.push({
+            "name": game.name,
+            "description": game.description
+        });
+    });
+
+    // await client.application?.commands.set(commands);
+    // await client.guilds.cache.get("503244758966337546")?.commands.set([]);
+}
 
 
 client.on("ready", async () => {
+    await deploy(); // Update Slash Commands
     client.user.setActivity("around");
-
-    // Create all Slash Commands
-    // await client.application?.commands.set(
-    //     Array.from(commands.values()).map(command => Object({
-    //         name: command.label.toLowerCase(),
-    //         description: command.description
-    //     }))
-    // );
-
     console.log("Connected!");
 });
 

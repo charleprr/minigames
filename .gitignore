@@ -2,7 +2,8 @@
 node_modules/
 
 # Database
-database/
+database/*
+!.gitkeep
 
 # Configuration
 config.js
