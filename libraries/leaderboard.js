@@ -7,52 +7,62 @@ export class Leaderboard {
         this.name = name;
         this.file = `database/${name.toLowerCase()}.json`;
         this.higherFirst = higherFirst;
+        this.data = null;
     }
 
-    getAll() {
+    read() {
         if (!fs.existsSync(this.file)) {
             fs.writeFileSync(this.file, "[]");
         }
-        return JSON.parse(fs.readFileSync(this.file));
+        return new Map(JSON.parse(fs.readFileSync(this.file)));
     }
 
-    get(playerId) {
-        return this.getAll().find(e => e.playerId == playerId);
+    write(data) {
+        this.data = data;
+        fs.writeFileSync(this.file, JSON.stringify([...data], null, 2));
+    }
+
+    get currentScores() {
+        if (!this.data) 
+            this.data = this.read();
+        return this.data;
     }
 
     add(member, score) {
-        let entries = this.getAll();
+
+        let playerEntry = this.currentScores.get(member.id);
+        // console.log("playerEntry: " + playerEntry?.score.value);
 
         if (this.higherFirst) {
-            if (this.get(member.id)?.score.value > score.value) return;
+            if (playerEntry?.score.value > score.value) return;
         } else {
-            if (this.get(member.id)?.score.value < score.value) return;
+            // console.log("testing");
+            if (playerEntry?.score.value < score.value) return;
         }
 
-        this.remove(member.id);
-        entries = this.getAll();
-        
-        entries.push({
+        // console.log("updating his score: "+ score.value);
+        let newData = this.currentScores;
+
+        newData.set(member.id, {
             playerId: member.id,
             playerName: member.displayName,
-            playerAvatar: member.user.displayAvatarURL({ format:"png" }),
+            playerAvatar: member.user.displayAvatarURL({ format: "png" }),
             guildName: member.guild.name,
             score: {
-                value: score.value,
+                value: Number(score.value),
                 unit: score.unit || ""
             }
         });
-        entries.sort((a, b) => this.higherFirst ? a.score.value + b.score.value : a.score.value - b.score.value);
-        fs.writeFileSync(this.file, JSON.stringify(entries, null, 4));
-    }
 
-    remove(playerId) {
-        const entries = this.getAll().filter(e => e.playerId != playerId);
-        fs.writeFileSync(this.file, JSON.stringify(entries, null, 4));
+        this.write(newData);
     }
 
     async render() {
-        const entries = this.getAll();
+
+        let entries = Array.from(this.currentScores.values());
+        entries = entries.sort((a, b) => this.higherFirst
+            ? a.score.value + b.score.value
+            : a.score.value - b.score.value);
 
         const image = canvas.createCanvas(700, 640);
         const ctx = image.getContext("2d");
@@ -65,22 +75,13 @@ export class Leaderboard {
         ctx.fillStyle = "#FFFFFF";
         ctx.textAlign = "center";
 
-        ctx.font = "bold 32px Courier New";
-        ctx.fillText("/" + this.name, 350, 40);
-
-        // ctx.font = "bold 20px Courier New";
-        // ctx.fillText("Bottom text", 350, 65);
-
-        // Controller
-        // ctx.globalAlpha = 0.5;
-        // ctx.drawImage(await canvas.loadImage("./images/controller.png"), 500, 335, 250, 250);
-        // ctx.globalAlpha = 1;
+        ctx.font = "bold 36px Courier New";
+        ctx.fillText("/" + this.name, 350, 55);
 
         let x = 20;
         let y = 90;
 
         for (let i=0; i<10; ++i) {
-            
 
             // Block
             if (i >= entries.length) {
@@ -98,9 +99,9 @@ export class Leaderboard {
 
             if (i >= entries.length) continue;
 
-            if (i == 0) ctx.fillStyle = "#C98910";
-            else if (i == 1) ctx.fillStyle = "#A8A8A8";
-            else if (i == 2) ctx.fillStyle = "#965A38";
+            if (i == 0) ctx.fillStyle = "#FFB404";
+            else if (i == 1) ctx.fillStyle = "#COCOCO";
+            else if (i == 2) ctx.fillStyle = "#CD7F32";
             else ctx.fillStyle = "#222222";
 
             // Rank
@@ -111,7 +112,7 @@ export class Leaderboard {
             // Player score
             ctx.font = "bold 24px Courier New";
             ctx.textAlign = "right";
-            ctx.fillText(entries[i].score.value + entries[i].score.unit, x+652, y+27 + i*55);
+            ctx.fillText(entries[i].score.value.toFixed(3) + entries[i].score.unit, x+652, y+27 + i*55);
             
             // Player avatar
             const ap = {

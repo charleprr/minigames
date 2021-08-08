@@ -3,8 +3,7 @@ import randword from "random-words";
 
 export const name = "typerace";
 export const description = "Are you the fastest typer?";
-export const emoji = "🙌🏻";
-export const leaderboard = new Leaderboard("typerace", false);
+export const leaderboard = new Leaderboard(name, false);
 
 export async function execute (interaction) {
 

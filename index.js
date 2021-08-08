@@ -11,7 +11,7 @@ const client = new Discord.Client({
 
 // Load games
 const games = new Map();
-const files = fs.readdirSync("./games");
+const files = fs.readdirSync("./games/");
 files.forEach(async file => {
     let game = await import("./games/" + file);
     games.set(game.name, game);
@@ -19,32 +19,31 @@ files.forEach(async file => {
 
 // Interactions
 client.on("interactionCreate", async interaction => {
-    const command = interaction.commandName || interaction.values[0] || interaction.customId;
+    const command = interaction.commandName || interaction.values?.[0] || interaction.customId;
     switch (command) {
-        // How to use Minigames
-        case "help":
-            const selectMenu = new Discord.MessageSelectMenu();
-            selectMenu.setCustomId("games");
-            selectMenu.addOptions(
-                Array.from(games.values()).map(game => Object({
-                    name: "/" + game.name,
-                    description: game.description,
-                    emoji: game.emoji,
-                    value: game.name
-                }))
-            );
-            const actionRow = new Discord.MessageActionRow().addComponents(selectMenu);
-            interaction.reply({ content: "Select a game", components: [actionRow]});
-            break;
 
         // Leaderboards
         case "top":
             let name = interaction.options.get("game")?.value;
             let leaderboard = games.get(name).leaderboard;
-
             await interaction.deferReply();
             await interaction.editReply({files: [ await leaderboard.render() ]});
+            break;
 
+        // Invite link
+        case "invite":
+            const actionRow = new Discord.MessageActionRow();
+            const b = new Discord.MessageButton();
+            b.setStyle("LINK");
+            b.setLabel("Invite me");
+            b.setURL("https://discord.com/api/oauth2/authorize?client_id=627860886672900096&permissions=0&scope=applications.commands%20bot");
+            actionRow.addComponents(b);
+            interaction.reply({ content: "Sample text", components: [actionRow] });
+            break;
+
+        // Ping
+        case "ping":
+            interaction.reply(Date.now() - interaction.createdTimestamp + "ms");
             break;
         
         // Games
@@ -53,17 +52,11 @@ client.on("interactionCreate", async interaction => {
     }
 });
 
-
-async function deploy() {
-
+async function updateSlashCommands() {
     const commands = [
         {
-            name: "help",
-            description: "How to use Minigames"
-        },
-        {
             name: "top",
-            description: "Shows the current leaderboard for a game",
+            description: "Get the current leaderboard for a game",
             options: [{
                 name: "game",
                 type: "STRING",
@@ -73,25 +66,33 @@ async function deploy() {
                     .filter(game => game.leaderboard)
                     .map(game => Object({ name: game.name, value: game.name}))
             }]
+        },
+        {
+            name: "invite",
+            description: "Add me to your server!"
+        },
+        {
+            name: "ping",
+            description: "What's my ping?"
         }
     ];
-
     games.forEach(game => {
         commands.push({
-            "name": game.name,
-            "description": game.description
+            name: game.name,
+            description: game.description,
+            options: game.options || []
         });
     });
-
-    // await client.application?.commands.set(commands);
-    // await client.guilds.cache.get("503244758966337546")?.commands.set([]);
+    await client.guilds.cache.get("503244758966337546")?.commands.set([]); // dimden.plex
+    await client.guilds.cache.get("802829823911133186")?.commands.set([]); // afterlife
+    await client.application?.commands.set(commands);
 }
 
-
 client.on("ready", async () => {
-    await deploy(); // Update Slash Commands
-    client.user.setActivity("around");
-    console.log("Connected!");
+    await client.application?.fetch();
+    await updateSlashCommands();    
+    client.user.setActivity("with people");
+    console.log("Connected.");
 });
 
 client.login(config.token);
