@@ -1,3 +1,4 @@
+import { fillTextWithTwemoji } from "node-canvas-with-twemoji-and-discord-emoji";
 import canvas from "canvas";
 import fs from "fs";
 
@@ -57,7 +58,7 @@ export class Leaderboard {
         this.write(newData);
     }
 
-    async render() {
+    async render(client) {
 
         let entries = Array.from(this.currentScores.values());
         entries = entries.sort((a, b) => this.higherFirst
@@ -86,8 +87,8 @@ export class Leaderboard {
             // Block
             if (i >= entries.length) {
                 ctx.globalAlpha = 0.5;
-                ctx.fillStyle = "#ff7878";
-                ctx.strokeStyle = "#ff7878";
+                ctx.fillStyle = "#FF7878";
+                ctx.strokeStyle = "#FF7878";
             } else {
                 ctx.fillStyle = "#FFFFFF";
                 ctx.strokeStyle = "#FFFFFF";
@@ -98,6 +99,12 @@ export class Leaderboard {
             ctx.strokeRect(x-2, y-2 + i*55, 664, 39);
 
             if (i >= entries.length) continue;
+
+            
+            if (!await client.users.cache.get(entries[i].playerId)) {
+                await client.users.fetch(entries[i].playerId);
+            }
+            let player = await client.users.cache.get(entries[i].playerId);
 
             if (i == 0) ctx.fillStyle = "#FFB404";
             else if (i == 1) ctx.fillStyle = "#COCOCO";
@@ -127,9 +134,9 @@ export class Leaderboard {
             ctx.closePath();
             ctx.clip();
         
-            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            ctx.fillStyle = "#FFFFFF";
             ctx.fillRect(ap.x, ap.y, ap.size, ap.size);
-            ctx.drawImage(await canvas.loadImage(entries[i].playerAvatar), ap.x, ap.y, ap.size, ap.size);
+            ctx.drawImage(await canvas.loadImage(player.displayAvatarURL({ format:"png" })), ap.x, ap.y, ap.size, ap.size);
         
             ctx.beginPath();
             ctx.arc(ap.x+(ap.size/2), ap.y+(ap.size/2), ap.size/2, 0, Math.PI * 2, true);
@@ -141,8 +148,8 @@ export class Leaderboard {
             ctx.font = "24px Courier New";
             ctx.textAlign = "left";
             ctx.fillStyle = "#222222";
-            ctx.fillText(entries[i].playerName, x+50+40, y+27 + i*55);
-        
+            await fillTextWithTwemoji(ctx, player.tag, x+50+40, y+27 + i*55);
+
         }
         
         return image.toBuffer();

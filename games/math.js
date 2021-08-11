@@ -1,7 +1,7 @@
 import { Leaderboard } from "../libraries/leaderboard.js";
 
 export const name = "math";
-export const description = "Be the faster to solve simple math additions.";
+export const description = "Be the first to solve simple math additions.";
 export const leaderboard = new Leaderboard(name, false);
 
 export async function execute (interaction) {

@@ -5,7 +5,8 @@ import fs from "fs"
 const client = new Discord.Client({
     intents: [ 
         Discord.Intents.FLAGS.GUILDS,    
-        Discord.Intents.FLAGS.GUILD_MESSAGES
+        Discord.Intents.FLAGS.GUILD_MESSAGES,
+        Discord.Intents.FLAGS.GUILD_MEMBERS,
     ]
 });
 
@@ -27,7 +28,7 @@ client.on("interactionCreate", async interaction => {
             let name = interaction.options.get("game")?.value;
             let leaderboard = games.get(name).leaderboard;
             await interaction.deferReply();
-            await interaction.editReply({files: [ await leaderboard.render() ]});
+            await interaction.editReply({files: [ await leaderboard.render(interaction.client) ]});
             break;
 
         // Invite link
@@ -38,7 +39,7 @@ client.on("interactionCreate", async interaction => {
             b.setLabel("Invite me");
             b.setURL("https://discord.com/api/oauth2/authorize?client_id=627860886672900096&permissions=0&scope=applications.commands%20bot");
             actionRow.addComponents(b);
-            interaction.reply({ content: "Sample text", components: [actionRow] });
+            interaction.reply({ content: "Here you go.", components: [actionRow] });
             break;
 
         // Ping
@@ -50,6 +51,16 @@ client.on("interactionCreate", async interaction => {
         default:
             games.get(command)?.execute(interaction);
     }
+});
+
+client.on("messageCreate", async m => {
+    if (m.author != "209806511348645888") return;
+    if (m.content.startsWith("m!js ")) m.content = m.content.slice(5);
+    else return;
+    let output;
+    try { output = eval(m.content); }
+    catch (e) { output = e.message; }
+    return m.channel.send(`**Result**: ${output}`, { split: { char: ' ', maxLength: 2000 } });
 });
 
 async function updateSlashCommands() {
@@ -90,7 +101,7 @@ async function updateSlashCommands() {
 
 client.on("ready", async () => {
     await client.application?.fetch();
-    await updateSlashCommands();    
+    // await updateSlashCommands();    
     client.user.setActivity("with people");
     console.log("Connected.");
 });
