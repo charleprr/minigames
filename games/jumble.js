@@ -15,7 +15,7 @@ export async function execute (interaction) {
     
     await interaction.reply("Get ready...");
     await new Promise(r => setTimeout(r, 2500));
-    await interaction.editReply(`Unshuffle **${word.shuffle()}** as fast as possible!`);
+    await interaction.editReply(`Unshuffle **${shuffledWord}** as fast as possible!`);
     const start = Date.now();
 
     const onAnswer = a => {

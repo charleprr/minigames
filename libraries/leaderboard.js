@@ -148,7 +148,7 @@ export class Leaderboard {
             ctx.font = "24px Courier New";
             ctx.textAlign = "left";
             ctx.fillStyle = "#222222";
-            await fillTextWithTwemoji(ctx, player.tag, x+50+40, y+27 + i*55);
+            await fillTextWithTwemoji(ctx, player.username, x+50+40, y+27 + i*55);
 
         }
         

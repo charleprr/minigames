@@ -101,8 +101,8 @@ async function updateSlashCommands() {
 
 client.on("ready", async () => {
     await client.application?.fetch();
-    // await updateSlashCommands();    
-    client.user.setActivity("with people");
+    // await updateSlashCommands();
+    client.user.setActivity("/typerace");
     console.log("Connected.");
 });
 
