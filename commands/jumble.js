@@ -1,4 +1,5 @@
 import Leaderboard from "../libraries/leaderboard.js";
+import { wait } from "../libraries/util.js";
 import randword from "random-words";
 
 export const name = "jumble";
@@ -14,7 +15,7 @@ export async function execute (interaction) {
     } while(shuffledWord === word);
     
     await interaction.reply("Get ready...");
-    await new Promise(r => setTimeout(r, 2500));
+    await wait(2.5);
     await interaction.editReply(`Unshuffle **${shuffledWord}** as fast as possible!`);
     const start = Date.now();
 

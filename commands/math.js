@@ -1,4 +1,5 @@
 import Leaderboard from "../libraries/leaderboard.js";
+import { wait } from "../libraries/util.js";
 
 export const name = "math";
 export const description = "Be the first to solve simple math additions.";
@@ -7,7 +8,7 @@ export const leaderboard = new Leaderboard(name, false);
 export async function execute (interaction) {
 
     await interaction.reply("Get ready...");
-    await new Promise(r => setTimeout(r, 2500));
+    await wait(2.5);
 
     const A = Math.floor(Math.random() * 90) + 10;
     const B = Math.floor(Math.random() * 90) + 10;

@@ -79,6 +79,9 @@ export default class Leaderboard {
         ctx.font = "bold 36px Courier New";
         ctx.fillText("/" + this.name, 350, 55);
 
+        // Game die
+        // ctx.drawImage(await canvas.loadImage("./images/game_die.png"), 575, 430, 200, 200);
+
         let x = 20;
         let y = 90;
 
@@ -100,7 +103,6 @@ export default class Leaderboard {
 
             if (i >= entries.length) continue;
 
-            
             if (!await client.users.cache.get(entries[i].playerId)) {
                 await client.users.fetch(entries[i].playerId);
             }
@@ -115,6 +117,7 @@ export default class Leaderboard {
             ctx.font = "bold 24px Courier New";
             ctx.textAlign = "left";
             ctx.fillText(`#${i + 1}`, x+10, y+27 + i*55);
+            let w = ctx.measureText(`#${i + 1}`);
 
             // Player score
             ctx.font = "bold 24px Courier New";
@@ -149,7 +152,6 @@ export default class Leaderboard {
             ctx.textAlign = "left";
             ctx.fillStyle = "#222222";
             await fillTextWithTwemoji(ctx, player.username, x+50+60, y+27 + i*55);
-
         }
         
         return image.toBuffer();

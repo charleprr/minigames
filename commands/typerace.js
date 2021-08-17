@@ -1,5 +1,6 @@
 import Leaderboard from "../libraries/leaderboard.js";
 import randword from "random-words";
+import { wait } from "../libraries/util.js";
 
 export const name = "typerace";
 export const description = "Are you the fastest typer?";
@@ -9,7 +10,7 @@ export async function execute (interaction) {
 
     const word = randword();
     await interaction.reply("Get ready...");
-    await new Promise(r => setTimeout(r, 2500));
+    await wait(2.5);
     await interaction.editReply(`Type **${word}** as fast as possible!`);
     const start = Date.now();
 
