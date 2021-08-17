@@ -3,6 +3,16 @@ import Discord from "discord.js";
 import config from "./config.js";
 import fs from "fs"
 
+export const commands = new Map();
+
+// Load commands from files
+const files = fs.readdirSync("./commands/");
+files.forEach(async file => {
+    let command = await import("./commands/" + file);
+    commands.set(command.name, command);
+});
+
+// Our bot client
 const client = new Discord.Client({
     intents: [ 
         Discord.Intents.FLAGS.GUILDS,    
@@ -10,15 +20,7 @@ const client = new Discord.Client({
     ]
 });
 
-// Load commands
-export const commands = new Map();
-const files = fs.readdirSync("./commands/");
-files.forEach(async file => {
-    let command = await import("./commands/" + file);
-    commands.set(command.name, command);
-});
-
-// Slash commands listener
+// Listen for slash commands
 client.on("interactionCreate", async interaction => {
     if (!interaction.isCommand()) return;
     commands.get(interaction.commandName)?.execute(interaction);
@@ -27,9 +29,8 @@ client.on("interactionCreate", async interaction => {
 
 // Eval command
 client.on("messageCreate", async m => {
-    if (m.author != "209806511348645888") return;
-    if (!m.content.startsWith("m!js ")) return;
-
+    if (m.author != client.application?.owner) return;
+    if (!m.content.startsWith("m!js")) return;
     let output;
     try {
         output = eval(m.content.slice(5));
