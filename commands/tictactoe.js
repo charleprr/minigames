@@ -89,6 +89,12 @@ export async function execute (interaction) {
     const p2 = interaction.member;
     const p1 = await interaction.guild.members.cache.get(interaction.options.get("opponent").user.id);
 
+    if (p2.id == p1.id) {
+        return interaction.reply("You cannot play against yourself");
+    } else if (p1.user.bot) {
+        return interaction.reply("You cannot play against bots");
+    }
+
     // Create the board
     const boardButtons = [];
     const board = [
