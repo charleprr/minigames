@@ -2,7 +2,7 @@ import { fillTextWithTwemoji } from "node-canvas-with-twemoji-and-discord-emoji"
 import canvas from "canvas";
 import fs from "fs";
 
-export class Leaderboard {
+export default class Leaderboard {
 
     constructor(name, higherFirst=true) {
         this.name = name;
@@ -124,7 +124,7 @@ export class Leaderboard {
             // Player avatar
             const ap = {
                 size: 30,
-                x: x+50,
+                x: x+70,
                 y: y+3 + i*55
             };
 
@@ -148,7 +148,7 @@ export class Leaderboard {
             ctx.font = "24px Courier New";
             ctx.textAlign = "left";
             ctx.fillStyle = "#222222";
-            await fillTextWithTwemoji(ctx, player.username, x+50+40, y+27 + i*55);
+            await fillTextWithTwemoji(ctx, player.username, x+50+60, y+27 + i*55);
 
         }
         
