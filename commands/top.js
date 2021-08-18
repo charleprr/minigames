@@ -7,11 +7,9 @@ export const options = [{
     type: "STRING",
     description: "Which game?",
     required: true,
-    // TODO: Do not hardcode choices
-    choices: [{name:"typerace", value:"typerace"}, {name:"math", value:"math"}, {name:"jumble", value:"jumble"}]
-    // Array.from(commands.values())
-    //    .filter(game => game.leaderboard)
-    //    .map(game => Object({ name: game.name, value: game.name}))
+    choices: Array.from(commands.values())
+       .filter(game => game.leaderboard)
+       .map(game => Object({ name: game.name, value: game.name}))
 }];
 
 export async function execute (interaction) {
