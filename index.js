@@ -1,7 +1,7 @@
 import * as logger from "./libraries/logger.js";
-import Discord from "discord.js";
 import config from "./config.js";
-import fs from "fs"
+import Discord from "discord.js";
+import fs from "fs";
 
 export const commands = new Map();
 
@@ -27,39 +27,21 @@ client.on("interactionCreate", async interaction => {
     logger.send(`${interaction.user.tag} used /${interaction.commandName}`);
 });
 
-// Eval command
-client.on("messageCreate", async m => {
-    if (m.author != client.application?.owner) return;
-    if (!m.content.startsWith("m!js")) return;
-    let output;
-    try {
-        output = eval(m.content.slice(5));
-    } catch (e) {
-        output = e.message;
-    }
-    m.channel.send(`**Result**: ${output}`, {split:{char:" ",maxLength:2000}});
-});
-
-function updateStatus() {
-    let names = Array.from(commands.keys());
-    client.user.setActivity("/" + names[Math.floor(Math.random() * names.length)]);
-}
 
 client.on("ready", async () => {
-    await client.application?.fetch();
 
-    updateStatus();
-    setInterval(() => updateStatus, 1.8e+6); // 30min
+    await client.application?.fetch();
+    client.user.setActivity("with friends");
 
     logger.setLogsChannel(client.channels.cache.get(config?.logs));
     logger.send(`✔️ Connected in ${client.guilds.cache.size} servers`);
 
     // const slashCommands = [];
-    // commands.forEach(game => {
+    // commands.forEach(command => {
     //     slashCommands.push({
-    //         name: game.name,
-    //         description: game.description,
-    //         options: game.options || []
+    //         name: command.name,
+    //         description: command.description,
+    //         options: command.options || []
     //     });
     // });
     // await client.application?.commands.set(slashCommands);
@@ -67,6 +49,7 @@ client.on("ready", async () => {
     // await client.guilds.cache.get("503244758966337546")?.commands.set([]); // dimden.plex
     // await client.guilds.cache.get("802829823911133186")?.commands.set([]); // afterlife
     // await client.guilds.cache.get("321819041348190249")?.commands.set([]); // mpp
+    // await client.guilds.cache.get("872273711980511292")?.commands.set([]); // no
 });
 
 client.on("warn", (warning) =>      logger.send(`⚠️ ${warning}`));

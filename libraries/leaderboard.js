@@ -4,23 +4,23 @@ import fs from "fs";
 
 export default class Leaderboard {
 
-    constructor(name, higherFirst=true) {
+    constructor(name, unit="", higherFirst=true) {
         this.name = name;
-        this.file = `database/${name.toLowerCase()}.json`;
+        this.unit = unit;
         this.higherFirst = higherFirst;
+        this.file = `database/${name.toLowerCase()}.json`;
         this.data = null;
     }
 
     read() {
-        if (!fs.existsSync(this.file)) {
-            fs.writeFileSync(this.file, "[]");
-        }
-        return new Map(JSON.parse(fs.readFileSync(this.file)));
+        if (!fs.existsSync(this.file))
+            fs.writeFileSync(this.file, "{}");
+        return JSON.parse(fs.readFileSync(this.file));
     }
 
     write(data) {
         this.data = data;
-        fs.writeFileSync(this.file, JSON.stringify([...data], null, 2));
+        fs.writeFileSync(this.file, JSON.stringify(data, null, 2));
     }
 
     get currentScores() {
@@ -30,40 +30,20 @@ export default class Leaderboard {
     }
 
     add(member, score) {
-
-        let playerEntry = this.currentScores.get(member.id);
-        // console.log("playerEntry: " + playerEntry?.score.value);
-
+        const playerEntry = this.currentScores[member.id];
         if (this.higherFirst) {
-            if (playerEntry?.score.value > score.value) return;
+            if (playerEntry?.score > score) return;
         } else {
-            // console.log("testing");
-            if (playerEntry?.score.value < score.value) return;
+            if (playerEntry?.score < score) return;
         }
-
-        // console.log("updating his score: "+ score.value);
-        let newData = this.currentScores;
-
-        newData.set(member.id, {
-            playerId: member.id,
-            playerName: member.displayName,
-            playerAvatar: member.user.displayAvatarURL({ format: "png" }),
-            guildName: member.guild.name,
-            score: {
-                value: Number(score.value),
-                unit: score.unit || ""
-            }
-        });
-
-        this.write(newData);
+        this.currentScores[member.id] = Number(score);
+        this.write(this.currentScores);
     }
 
     async render(client) {
 
-        let entries = Array.from(this.currentScores.values());
-        entries = entries.sort((a, b) => this.higherFirst
-            ? a.score.value + b.score.value
-            : a.score.value - b.score.value);
+        const entries = Object.entries(this.currentScores).sort(
+            (a, b) => this.higherFirst ? a[1] + b[1] : a[1] - b[1]);
 
         const image = canvas.createCanvas(700, 640);
         const ctx = image.getContext("2d");
@@ -103,10 +83,10 @@ export default class Leaderboard {
 
             if (i >= entries.length) continue;
 
-            if (!await client.users.cache.get(entries[i].playerId)) {
-                await client.users.fetch(entries[i].playerId);
+            if (!await client.users.cache.get(entries[i][0])) {
+                await client.users.fetch(entries[i][0]);
             }
-            let player = await client.users.cache.get(entries[i].playerId);
+            let player = await client.users.cache.get(entries[i][0]);
 
             if (i == 0) ctx.fillStyle = "#FFB404";
             else if (i == 1) ctx.fillStyle = "#COCOCO";
@@ -122,7 +102,7 @@ export default class Leaderboard {
             // Player score
             ctx.font = "bold 24px Courier New";
             ctx.textAlign = "right";
-            ctx.fillText(entries[i].score.value.toFixed(3) + entries[i].score.unit, x+652, y+27 + i*55);
+            ctx.fillText(entries[i][1].toFixed(3) + this.unit, x+652, y+27 + i*55);
             
             // Player avatar
             const ap = {

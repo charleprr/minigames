@@ -1,6 +1,6 @@
 import { commands } from "../index.js";
 
-export const name = "leaderboard";
+export const name = "top";
 export const description = "Get the current leaderboard for a game!";
 export const options = [{
     name: "game",

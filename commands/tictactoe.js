@@ -4,7 +4,7 @@ export const name = "tictactoe";
 export const description = "Play tic-tac-toe against someone!";
 export const options = [{
     name: "opponent",
-    type: "MENTIONABLE",
+    type: "USER",
     description: "Who do you want to play against?",
     required: true
 }];
