@@ -16,5 +16,5 @@ export async function execute (interaction) {
     let name = interaction.options.get("game")?.value;
     let leaderboard = commands.get(name).leaderboard;
     await interaction.deferReply();
-    await interaction.editReply({files: [ await leaderboard.render(interaction.client) ]});
+    await interaction.editReply({ files: [await leaderboard.render(interaction.client)] });
 }

@@ -15,7 +15,7 @@ const shuffle = function(string) {
 
 export const name = "jumble";
 export const description = "Can you guess the shuffled word?";
-export const leaderboard = new Leaderboard(name, false);
+export const leaderboard = new Leaderboard(name, "s", false);
 
 export async function execute (interaction) {
 

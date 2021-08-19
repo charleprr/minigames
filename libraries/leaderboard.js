@@ -30,11 +30,11 @@ export default class Leaderboard {
     }
 
     add(member, score) {
-        const playerEntry = this.currentScores[member.id];
+        const savedScore = this.currentScores[member.id];
         if (this.higherFirst) {
-            if (playerEntry?.score > score) return;
+            if (savedScore > score) return;
         } else {
-            if (playerEntry?.score < score) return;
+            if (savedScore < score) return;
         }
         this.currentScores[member.id] = Number(score);
         this.write(this.currentScores);
