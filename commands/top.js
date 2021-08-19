@@ -8,13 +8,13 @@ export const options = [{
     description: "Which game?",
     required: true,
     choices: Array.from(commands.values())
-       .filter(game => game.leaderboard)
+       .filter(game => game.leaderboard) // Only keep games with leaderboards
        .map(game => Object({ name: game.name, value: game.name}))
 }];
 
 export async function execute (interaction) {
     let name = interaction.options.get("game")?.value;
     let leaderboard = commands.get(name).leaderboard;
-    await interaction.deferReply();
+    await interaction.deferReply(); // "Minigames is thinking..."
     await interaction.editReply({ files: [await leaderboard.render(interaction.client)] });
 }

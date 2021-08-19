@@ -1,9 +1,3 @@
-# Dependencies
 node_modules/
-
-# Database
-database/*
-!.gitkeep
-
-# Configuration
+database/
 config.js

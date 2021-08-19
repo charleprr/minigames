@@ -1,5 +1,4 @@
 import Leaderboard from "../libraries/leaderboard.js";
-import { wait } from "../libraries/util.js";
 import randword from "random-words";
 
 const shuffle = function(string) {
@@ -15,7 +14,7 @@ const shuffle = function(string) {
 
 export const name = "jumble";
 export const description = "Can you guess the shuffled word?";
-export const leaderboard = new Leaderboard(name, "s", false);
+export const leaderboard = new Leaderboard(name, false, "s");
 
 export async function execute (interaction) {
 
@@ -28,7 +27,7 @@ export async function execute (interaction) {
     const filter = m => m.content.toLowerCase() === word;
 
     await interaction.reply("Get ready...");
-    await wait(2.5);
+    await new Promise(r => setTimeout(r, 2500));
     await interaction.editReply(`Deshuffle **${shuffledWord}** as fast as possible!`);
     const start = Date.now();
 

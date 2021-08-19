@@ -1,5 +1,5 @@
 # Minigames
-_Work in progress_
+_Work in progress..._
 
 ```js
 // config.js
