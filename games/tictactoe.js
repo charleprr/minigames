@@ -1,5 +1,6 @@
 import Discord from "discord.js";
 
+// TODO: Clean this mess
 export const name = "tictactoe";
 export const description = "Play tic-tac-toe against someone!";
 export const options = [{
