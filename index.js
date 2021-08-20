@@ -3,20 +3,20 @@ import config from "./config.js";
 import Discord from "discord.js";
 import fs from "fs";
 
-// Our bot client
+// Discord client
 const client = new Discord.Client({
     intents: [ Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES ]
 });
 
-// Load games
+// Games dictionary
 const games = new Map();
-const files = fs.readdirSync("./games/");
-files.forEach(async file => {
-    let game = await import("./games/" + file);
+const folders = fs.readdirSync("./games/");
+folders.forEach(async folder => {
+    let game = await import("./games/" + folder + "/index.js");
     games.set(game.name, game);
 });
 
-// Deploy new commands
+// Deploy an update
 async function deploy() {
     await client.application?.commands.set([
         {

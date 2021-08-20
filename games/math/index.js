@@ -1,18 +1,19 @@
-import Leaderboard from "../libraries/leaderboard.js";
-import randword from "random-words";
+import Leaderboard from "../../libraries/leaderboard.js";
 
-export const name = "typerace";
-export const description = "Are you the fastest typer?";
+export const name = "math";
+export const description = "Be the first to solve simple math additions.";
 export const leaderboard = new Leaderboard(name, false, "s");
 
 export async function execute (interaction) {
 
-    const word = randword();
-    const filter = m => m.content.toLowerCase() === word;
+    const A = Math.floor(Math.random() * 90) + 10;
+    const B = Math.floor(Math.random() * 90) + 10;
+    const ANSWER = A + B;
+    const filter = m => m.content == ANSWER;
 
     await interaction.reply("Get ready...");
     await new Promise(r => setTimeout(r, 2500));
-    await interaction.editReply(`Type **${word}** as fast as possible!`);
+    await interaction.editReply(`What's **${A} + ${B}** ?`);
     const start = Date.now();
 
     interaction.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ["time"] })
@@ -21,6 +22,6 @@ export async function execute (interaction) {
             interaction.followUp(`${m.first().member.displayName} won in \`${score}\` seconds!`);
             leaderboard.add(m.first().member, score);
         })
-        .catch(() => interaction.followUp("It's been 20 seconds! The game is over."));
+        .catch(() => interaction.followUp(`It's been 20 seconds! The answer was **${ANSWER}**.`));
     
 };
