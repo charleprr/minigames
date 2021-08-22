@@ -71,7 +71,7 @@ client.on("interactionCreate", async interaction => {
             interaction.reply("[Click here!](https://discord.com/api/oauth2/authorize"
                 + interaction.client.user.id + "&permissions=0&scope=applications.commands%20bot)");
             break;
-        
+            
         default:
             const game = games.get(interaction.commandName);
             game?.execute(interaction);
