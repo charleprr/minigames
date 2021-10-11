@@ -13,7 +13,8 @@ const games = new Map();
 const folders = fs.readdirSync("./games/");
 folders.forEach(async folder => {
     let game = await import("./games/" + folder + "/index.js");
-    games.set(game.name, game);
+    folder !== 'rps101' && games.set(game.name,game); //PLEASE TEST - unsure this needs to be done tbh
+    //Have to register rps101 as a seperate command because A~ is too lazy to learn interactions and Charly hasn't made anything with inputs. Sad!
 });
 
 // Deploy an update
@@ -40,6 +41,16 @@ async function deploy() {
             name: "invite",
             description: "Add me to your server!"
         },
+        {
+            name: "rps101",
+            description: "The super ultra mega deluxe edition of Rock Paper Scissors!",
+            options: [{
+                name: "choice",
+                type: "STRING",
+                description: "Your RPS101 choice",
+                required: true
+            }]
+        }
         ...Array.from(games.values()).map(game => Object({
             name: game.name,
             description: game.description,
@@ -72,6 +83,11 @@ client.on("interactionCreate", async interaction => {
                 + interaction.client.user.id + "&permissions=0&scope=applications.commands%20bot)");
             break;
             
+        case "rps101":
+            await interaction.deferReply();
+            await interaction.editReply({ //... });
+            break;
+          
         default:
             const game = games.get(interaction.commandName);
             game?.execute(interaction);
