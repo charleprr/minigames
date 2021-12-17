@@ -84,7 +84,7 @@ client.on("interactionCreate", async interaction => {
 
 client.on("ready", async () => {
     await client.application?.fetch();
-    await deploy();
+    // await deploy();
     client.user.setActivity("with friends");
     Logger.setLogsChannel(client.channels.cache.get(config?.logs));
     Logger.send(`✔️ Connected in ${client.guilds.cache.size} servers`);
