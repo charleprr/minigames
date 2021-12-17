@@ -68,7 +68,7 @@ client.on("interactionCreate", async interaction => {
             break;
 
         case "invite":
-            interaction.reply("[Click here!](https://discord.com/api/oauth2/authorize"
+            interaction.reply("[Click here!](https://discord.com/api/oauth2/authorize?client_id="
                 + interaction.client.user.id + "&permissions=0&scope=applications.commands%20bot)");
             break;
             
@@ -84,6 +84,7 @@ client.on("interactionCreate", async interaction => {
 
 client.on("ready", async () => {
     await client.application?.fetch();
+    await deploy();
     client.user.setActivity("with friends");
     Logger.setLogsChannel(client.channels.cache.get(config?.logs));
     Logger.send(`✔️ Connected in ${client.guilds.cache.size} servers`);
